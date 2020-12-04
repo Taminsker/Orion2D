@@ -1,0 +1,229 @@
+
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[frenchb]{babel}
+\usepackage{amssymb,amsmath}
+\usepackage{float,subcaption}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{bm}
+\usepackage[ruled,vlined, french, onelanguage]{algorithm2e}
+\usepackage[hidelinks]{hyperref}
+\usepackage{textcomp}
+\usepackage{esint}
+\usepackage{dsfont}
+\usepackage[sc]{mathpazo}
+\linespread{1.05}
+
+\textwidth=170mm
+\textheight=240mm
+\voffset=-30mm
+\hoffset=-21mm
+
+\newenvironment{changemargin}[2]{\begin{list}{}{%
+			\setlength{\topsep}{0pt}%
+			\setlength{\leftmargin}{0pt}%
+			\setlength{\rightmargin}{0pt}%
+			\setlength{\listparindent}{\parindent}%
+			\setlength{\itemindent}{\parindent}%
+			\setlength{\parsep}{0pt plus 1pt}%
+			\addtolength{\leftmargin}{#1}%
+			\addtolength{\rightmargin}{#2}%
+		}\item }{\end{list}}
+
+\usepackage{array,multirow,makecell}
+\newcolumntype{C}[1]{>{\centering\arraybackslash }b{#1}}
+
+\usepackage{graphicx}
+
+\def \bs {\backslash}
+\def \eps {\varepsilon}
+\def \p {\varphi}
+
+\def \un {\mathds{1}}
+\def \RR {\mathbb{R}}
+\def \EE {\mathbb{E}}
+\def \CC {\mathbb{C}}
+\def \KK {\mathbb{K}}
+\def \NN {\mathbb{N}}
+\def \PP {\mathbb{P}}
+\def \TT {\mathbb{T}}
+\def \ZZ {\mathbb{Z}}
+\def \sA {\mathcal{A}}
+\def \sC {\mathcal{C}}
+\def \sF {\mathcal{F}}
+\def \sM {\mathcal{M}}
+\def \sO {\mathcal{O}}
+\def \sG {\mathcal{G}}
+\def \sE {\mathcal{E}}
+\def \sB {\mathcal{B}}
+\def \sS {\mathcal{S}}
+\def \sT {\mathcal{T}}
+\def \sD {\mathcal{D}}
+\def \sH {\mathcal{H}}
+\def \sN {\mathcal{N}}
+\def \sP {\mathcal{P}}
+\def \sQ {\mathcal{Q}}
+\def \sU {\mathcal{U}}
+\def \sV {\mathcal{V}}
+\def \sL {\mathcal{L}}
+\def \disp {\displaystyle}
+\def \vn {\vspace{3 mm} \noindent}
+\def \ni {\noindent}
+\def \red {\textcolor{Red}}
+\def \blue {\textcolor{Blue}}
+\def \green {\textcolor{OliveGreen}}
+\def \brown {\textcolor{RawSienna}}
+\def \purple {\textcolor{Purple}}
+\def \navy {\textcolor{NavyBlue}}
+\def \orange {\textcolor{Orange}}
+\def \pink {\textcolor{Magenta}}
+\def \d {{\rm d}}
+\def \div {\nabla \cdot}
+\def \rot {\nabla \times}
+\def \grad {\nabla}
+\def \lap {\Delta}
+\def \vit {\bm{u}}
+\def \grav {\bm{g}}
+\newcommand{\peq}{\mathrel{+}=}
+\newcommand{\meq}{\mathrel{-}=}
+\newcommand{\feq}{\mathrel{*}=}
+
+\def \HRule {\rule{\linewidth}{0.5mm}}
+
+
+\begin{document}
+
+\noindent
+Techniques de Maillage, 2020/2021 \hfill Valentin PANNETIER, Alexis TARDIEU
+
+\vspace{5mm}
+
+\begin{center}
+	\Large{\textbf{Génération de maillage 2D de type Delaunay}} \\[2mm]
+	\Large{\textit{Compte-rendu de l'avancement du projet}}
+\end{center}
+
+\vspace{5mm}
+
+\tableofcontents
+\vn
+
+
+\section{Date : 4 décembre 2020}
+%\hrule\vspace{3mm} 
+\noindent
+\textbf{Plan prévisionnel}
+
+\vn
+$\bullet$ Création de la structure de stockages, facilitant l'insertion d'arêtes et de swap --> Il faut que ce soit facile à changer.
+
+\vn
+$\bullet$ Lecture et écriture de fichiers (par exemple en entrée un .mesh 1D plongé dans du 2D, en sortie un .mesh classique)
+
+
+\vn
+$\bullet$ Construction de la partie : noyau de Delaunay
+
+\begin{enumerate}
+	\item Localisation du point de triangulation -> Simple entrée avec IN/OUT du triangle
+	\item Identification de la cavité de Delaunay
+	\item Suppression et reconnection de la cavité
+\end{enumerate}
+
+\vn
+$\bullet$ Créer les swap d'arêtes (listes et étude de la façon de faire)
+
+\vn
+$\bullet$ Trouver la boite englobante --> Facile ? (intuitif min-max \& eps, meilleure boite ? Envelope convexe ?)
+
+\vn
+$\bullet$ Itérer le noyau pour tous les points de discrétisation 
+
+\vn
+$\bullet$ Forcer la frontière
+
+\vn
+$\bullet$ Qualité des éléments -> Subdiviser pour améliorer la qualité ? À voir !
+
+\vn
+$\bullet$ À partir du nombre de points souhaités, subdiviser les plus gros éléments avec le respect de la discrétisation initiale ! Attention aux proportions de deux triangles côte-à-côte --> Critère !
+
+\vn
+$\bullet$ Points d'optimisation
+
+\begin{enumerate}
+	\item Accès à la donnée ?
+	\item Détecter si oui ou non on est dans la cavité de Delaunay ?
+	\item Identifier les éléments les + "mauvais" ?
+	\item Déplacer des points de discrétisation ? Peut-être trop dense ou pas assez ?
+	\item Attention au rapport de taille ! -> Mauvaise solution numérique
+\end{enumerate}
+
+\vn	
+$\bullet$ Autres idées : 
+
+\begin{enumerate}
+	\item Création de carte de taille, à partir de la densité de discrétisation du(des) bord(s) ? Et donc subdivision par rapport à cette carte -> vers unit mesh
+	\item Mailler deux domaines qui se touchent, avec partage de points de bord ?
+	\item Tester sur les différents maillages sur le même problème -> Étude de l'erreur en fonction du maillage et des critères (donc nécessité d'être configurable)
+	\item P2, P3 etc ? (Option car des notions de courbures interviennent)
+\end{enumerate}
+
+\vn
+$\bullet$ Cas tests
+
+\begin{enumerate}
+	\item tore ? (trou)	
+	\item étoile ? (arêtes vives et coins ?)
+	\item imposition d'une discrétisation interne --> aile d'avion ?
+	\item Forme de pièce industrie ? Avec des zones bcp plus denses ?
+\end{enumerate}
+
+
+
+%\begin{align*}
+%	\left(x_a - x_s\right)^2 + \left(y_a - y_s\right)^2 &= r^2\\
+%	\left(x_b - x_s\right)^2 + \left(y_b - y_s\right)^2 &= r^2\\	
+%	\left(x_c - x_s\right)^2 + \left(y_c - y_s\right)^2 &= r^2\\
+%\end{align*}
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l|l}
+	\hline	
+	\textbf{Valentin} & \textbf{Alexis} \\
+	\hline
+		\begin{tabular}{l}
+			Création du répertoire\\
+			Classe Cell \& Mesh\\
+			Écriture\\
+			Création des maillages d'entrées\\
+			Forcer la frontière, et carte de couleur\\
+			Carte rapport de taille ?\\
+		\end{tabular}
+		& 
+		\begin{tabular}{l}
+			Classe Point\\
+			Lecture d'un .mesh\\
+			Swap\\
+			Qualité des éléments\\
+			Math : être dans la cavité de Delaunay\\
+			Boite englobante\\
+%			Solveur (Utilisation d'Eigen ?)\\\textsl{}
+		\end{tabular}\\
+	\hline
+	\end{tabular}
+	\caption{Répartition}
+\end{table}
+
+
+
+
+
+
+
+
+\end{document}
