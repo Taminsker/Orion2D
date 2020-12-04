@@ -1,0 +1,114 @@
+\documentclass[9pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{{pictures/}}
+
+\usepackage[french]{babel}
+\frenchbsetup{StandardLists=true}
+\usepackage[light, math]{kurier}
+
+\usepackage[T1]{fontenc}
+\usepackage[dvipsnames]{xcolor}
+
+\definecolor{MyBlue}{RGB}{0, 68, 128}
+\definecolor{MyYellow}{RGB}{255, 148, 0}
+\colorlet{MyRed}{red!60!black}
+\definecolor{MyGreen}{RGB}{38, 78, 54}
+
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{amsmath, amssymb, amsthm}  
+\usepackage{upgreek} 
+\usepackage{esint}      
+\usepackage{stmaryrd}  
+\usepackage{ifthen}
+\usepackage{amstext, amsfonts, a4}
+\usepackage{dsfont}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=MyRed,
+	citecolor=MyBlue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+	bookmarks=true
+}
+
+\usepackage{multicol}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{pgffor}
+\usepackage{nicefrac} 
+\usepackage[labelfont=bf]{subcaption}
+\usepackage{cases}
+\usepackage[square, numbers]{natbib}
+\bibliographystyle{dinat}
+\usepackage[nottoc]{tocbibind}
+
+\setlength\headheight{2cm}
+\usepackage[left=1cm, right=1cm, top=1cm, bottom=2cm]{geometry}
+
+\setlength{\columnsep}{5mm}
+
+\usepackage[framemethod=tikz]{mdframed}
+\mdfdefinestyle{MyFrame}{%
+    linecolor=white,
+    outerlinewidth=2pt,
+    % outerlinecolor=black,
+    roundcorner=2pt,
+    innertopmargin=4pt,
+    innerbottommargin=4pt,
+    innerrightmargin=4pt,
+    innerleftmargin=4pt,
+    leftmargin = 2pt,
+    rightmargin = 2pt,
+    % width=\textwidth,
+    backgroundcolor=MyBlue!20!white
+}
+
+\usepackage{lipsum}
+\nonfrenchspacing
+\setlength\parindent{0pt}
+\everymath{\displaystyle}
+
+\def\custratio{0.2}
+
+\begin{document}
+\thispagestyle{empty}
+\pagecolor{MyBlue!10!white}
+\color{black}
+
+\begin{mdframed}[style=MyFrame,nobreak=true,align=center]
+\begin{minipage}{\custratio\textwidth}
+    \includegraphics[width=\linewidth]{ublogo.png}\\
+\end{minipage}
+\hspace{0.02\textwidth}
+\begin{minipage}{\textwidth - \custratio\textwidth}
+        \textbf{\textsc{\Large Compte Rendu du cours Maillage}}\\
+        \textsc{\large Master 2 - Modélisation numérique et calcul haute performance}\\
+        {\normalsize Tardieu Alexis \& Pannetier Valentin}\vspace{5mm}\\
+        \textbf{\large Mailleur selon la triangulation de Delaunay}\vspace{2mm}
+\end{minipage}
+\end{mdframed}
+
+% \hrule
+
+\begin{multicols}{2}
+\section{Test}
+\lipsum[1]
+\section{Test}
+\lipsum[1]
+\section{Test}
+\lipsum[1]
+\section{Test}
+\lipsum[1]
+\section{Test}
+\lipsum[1]
+
+
+% \selectlanguage{french}
+% \bibliography{refs.bib}
+
+\end{multicols}
+\end{document}
