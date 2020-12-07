@@ -22,12 +22,12 @@
 
 %%% Global Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\graphicspath{{pix/}}	% Root directory of the pictures 
+\graphicspath{{pix/}}	% Root directory of the pictures
 % \tracingstats=2			% Enabled LaTeX logging with conditionals
 
 %%% Color Definitions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\definecolor{MainColor}{HTML}{4465A2}
+\definecolor{MainColor}{HTML}{142338}
 \definecolor{MyYellow}{RGB}{255, 148, 0}
 \definecolor{MyRed}{HTML}{9e1030}
 \definecolor{MyGreen}{RGB}{38, 78, 54}
@@ -76,7 +76,7 @@
 	% Option is left on true though the eyecatcher is not used. The reason is
 	% that we have a bit nicer looking title and author formatting in the headercol
 	% this way
-	%eyecatcher=false, 
+	%eyecatcher=false,
 	borderColor=bordercol,
 	headerColorOne=headercol1,
 	headerColorTwo=headercol2,
@@ -128,7 +128,7 @@ Sampling networks always involves the act of aggregation (e.g., when collecting 
 }
 
 \headerbox{Basic Concepts}{name=definitions,column=0,below=problem}{
-In our work the dynamic network is a series of graphs, that is, $DN = G_t(V_t,E_t)$, where $E_t \subseteq V_t \times V_t$ ($\forall t \geq 0$). The initial network, $G_0$, is considered as a parameter of the process. The \textbf{node set fixed} and we worked with an about \textbf{constant number of edges}. We assume that the evolution of the network can be described as the result of an edge creation and an edge deletion process. We define $G_t$ as the \textbf{snapshot network} and 
+In our work the dynamic network is a series of graphs, that is, $DN = G_t(V_t,E_t)$, where $E_t \subseteq V_t \times V_t$ ($\forall t \geq 0$). The initial network, $G_0$, is considered as a parameter of the process. The \textbf{node set fixed} and we worked with an about \textbf{constant number of edges}. We assume that the evolution of the network can be described as the result of an edge creation and an edge deletion process. We define $G_t$ as the \textbf{snapshot network} and
 	{\smaller
 	$$G_T = ( \bigcup^{T}_{t=0}V_t, \bigcup^{T}_{t=0}E_t) ~ \textnormal{for} ~ T \geq 0.$$
 	}
@@ -151,7 +151,7 @@ as the \textbf{cumulative network}.
 \begin{thebibliography}{1}							% Simple bibliography with widest label of 1
 \itemsep=-0.01em										% Save space between the separation
 \setlength{\baselineskip}{0.4em}					% Save space with longer lines
-\bibitem{prevWork1} Laszlo Gulyas, Richard Legendi: \emph{Effects of Sample Duration on Network Statistics in Elementary Models of Dynamic Networks}, International Conference on Computational Science, Singapore (2011) 
+\bibitem{prevWork1} Laszlo Gulyas, Richard Legendi: \emph{Effects of Sample Duration on Network Statistics in Elementary Models of Dynamic Networks}, International Conference on Computational Science, Singapore (2011)
 \bibitem{prevWork2} Laszlo Gulyas, Susan Khor, Richard Legendi and George Kampis \emph{Cumulative Properties of Elementary Dynamic Networks}, The International Sunbelt Social Network Conference XXXI (2011)
 \bibitem{gulya-kampis1} Gulyas, Laszlo et al.: \emph{Betweenness Centrality Dynamics in Networks of Changing Density}. Presented at the 19th International Symposium on Mathematical Theory of Networks and Systems (MTNS 2010)
 \end{thebibliography}
@@ -161,10 +161,10 @@ as the \textbf{cumulative network}.
 \smaller						% Make the whole text smaller
 \vspace{-0.4em}			% Save some space at the beginning
 This research was partially supported by the Hungarian Government (KMOP-1.1.2-08/1-2008-0002 ) and the European Union's Seventh Framework Programme: DynaNets, FET-Open project no. FET-233847 (\url{http://www.dynanets.org}). The supports are gratefully acknowledged.
-} 
+}
 
 \headerbox{Dynamic Networks are Sensitive to Aggregation}{name=density,span=2,column=1,row=0}{
-Network characteristics are extremely sensitive to minor changes in aggregation length. In our previous work \cite{prevWork1} \cite{prevWork2}, we studied the cumulative properties of Elementary Dynamic Network models over the complete time period (i.e., until they reach the stable point of a full network). Here we focus on the more realistc domain of sparse (cumulative) networks. We find that even when snapshot networks are stationary, \textbf{important network characteristics}  (average path lenght, clustering, betwenness centrality) \textbf{are extremely sensitive to aggregation} (window length). 
+Network characteristics are extremely sensitive to minor changes in aggregation length. In our previous work \cite{prevWork1} \cite{prevWork2}, we studied the cumulative properties of Elementary Dynamic Network models over the complete time period (i.e., until they reach the stable point of a full network). Here we focus on the more realistc domain of sparse (cumulative) networks. We find that even when snapshot networks are stationary, \textbf{important network characteristics}  (average path lenght, clustering, betwenness centrality) \textbf{are extremely sensitive to aggregation} (window length).
 
 \includegraphics[angle=-90,width=0.98\linewidth]{PA_and_ER_Models_statisticalMeasures}
 }
