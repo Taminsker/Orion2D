@@ -1,7 +1,6 @@
-#ifndef SRC_DATA_MESH_HPP
-#define SRC_DATA_MESH_HPP
+#ifndef SRC_CORE_EDGE_HPP
+#define SRC_CORE_EDGE_HPP
 
-#include <iostream>
 #include <vector>
 
 #include "../orionheader.hpp"
@@ -9,13 +8,12 @@
 
 class Point;
 class Cell;
-class Edge;
 
-class Mesh
+class Edge
 {
 public:
-    Mesh ();
-    ~Mesh ();
+    Edge ();
+    ~Edge ();
 
     GET_THE (Point, m_points)
     GET_NUMBER_OF (Point, m_points)
@@ -27,18 +25,12 @@ public:
     INSERT_THE (Cell, m_cells)
     REMOVE_THE (Cell, m_cells)
 
-    GET_THE (Edge, m_edges);
-    GET_NUMBER_OF (Edge, m_edges)
-    INSERT_THE (Edge, m_edges)
-    REMOVE_THE (Edge, m_edges)
-
 protected:
     std::vector<Point *> m_points;
     std::vector<Cell *>  m_cells;
-    std::vector<Edge *>  m_edges;
 
 private:
-    Mesh (const Mesh &) = delete;
+    Edge (const Edge &) = delete;
 };
 
-#endif /* SRC_DATA_MESH_HPP */
+#endif /* SRC_CORE_EDGE_HPP */
