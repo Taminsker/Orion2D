@@ -12,15 +12,15 @@ Point::Point (double xval, double yval) : x (xval),
 {
 }
 
-Point (const Point & pointToCopy) : x (pointToCopy.x),
-                                    y (pointToCopy.y),
-                                    m_listOfPoints (pointToCopy.m_listOfPoints),
-                                    m_listOfEdges (pointToCopy.m_listOfEdges),
-                                    m_listOfCells (pointToCopy.m_listOfCells)
+Point::Point (const Point & pointToCopy) : x (pointToCopy.x),
+                                           y (pointToCopy.y),
+                                           m_listOfPoints (pointToCopy.m_listOfPoints),
+                                           m_listOfEdges (pointToCopy.m_listOfEdges),
+                                           m_listOfCells (pointToCopy.m_listOfCells)
 {
 }
 
-~Point ()
+Point::~Point ()
 {
     m_listOfPoints.clear ();
     m_listOfEdges.clear ();
@@ -54,7 +54,7 @@ Point::GetNeighCell (int i)
 }
 
 int
-GetGlobalIndex ()
+Point::GetGlobalIndex ()
 {
     return m_globalIndex;
 }
@@ -62,13 +62,13 @@ GetGlobalIndex ()
 // Changement d'attributs
 
 void
-SetLOC (LOC loc)
+Point::SetLOC (LOC loc)
 {
     m_LOC = loc;
 }
 
 void
-SetGlobalIndex (int idx)
+Point::SetGlobalIndex (int idx)
 {
     m_globalIndex = idx;
 }
@@ -166,24 +166,24 @@ Point::RemoveNeighCell (Cell * cellOut)
 Point &
 Point::operator+= (const Point & b)
 {
-    m_x += b.m_x;
-    m_y += b.m_y;
+    x += b.x;
+    y += b.y;
     return *this;
 }
 
 Point &
 Point::operator-= (const Point & b)
 {
-    m_x -= b.m_x;
-    m_y -= b.m_y;
+    x -= b.x;
+    y -= b.y;
     return *this;
 }
 
 Point &
 Point::operator*= (double k)
 {
-    m_x *= k;
-    m_y *= k;
+    x *= k;
+    y *= k;
     return *this;
 }
 

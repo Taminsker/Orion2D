@@ -11,6 +11,6 @@ class Cell;
 double quality (Cell* cell);
 
 // Minimum, maximum, moyenne et répartition des qualités
-void histogram (vector<double> v);
+void histogram (std::vector<double> v);
 
 #endif /* SRC_ALGORITHM_QUALITY_HPP */

@@ -21,8 +21,7 @@ public:
     double y;
 
     // Constructeurs et destructeur
-    Point ();
-    Point (double xval, double yval = 0.);
+    Point (double xval = 0., double yval = 0.);
     Point (const Point & pointToCopy);
     ~Point ();
 
