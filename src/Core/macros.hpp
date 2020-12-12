@@ -36,18 +36,18 @@
         return;                    \
     }
 
-#define GET_THE(X, Y)    \
-    ORION_HARD_INLINE    \
-    X * Get##X (ul_t id) \
-    {                    \
-        return Y [id];   \
+#define GET_THE(X, Y)          \
+    ORION_HARD_INLINE          \
+    X * Get##X (ul_t id) const \
+    {                          \
+        return Y [id];         \
     }
 
-#define GET_NUMBER_OF(X, Y)   \
-    ORION_HARD_INLINE         \
-    ul_t GetNumberOf##X##s () \
-    {                         \
-        return Y.size ();     \
+#define GET_NUMBER_OF(X, Y)         \
+    ORION_HARD_INLINE               \
+    ul_t GetNumberOf##X##s () const \
+    {                               \
+        return Y.size ();           \
     }
 
 #endif /* SRC_CORE_MACROS_HPP */
