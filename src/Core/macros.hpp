@@ -1,21 +1,22 @@
 #ifndef SRC_CORE_MACROS_HPP
 #define SRC_CORE_MACROS_HPP
 
-#define INSERT_THE(X, Y)      \
-    ORION_HARD_INLINE         \
-    void                      \
-    Insert (X * object)       \
-    {                         \
-        if (!object)          \
-            return;           \
-                              \
-        for (X * in : Y)      \
-            if (in == object) \
-                return;       \
-                              \
-        Y.push_back (object); \
-                              \
-        return;               \
+#define INSERT_THE(X, Y)                    \
+    ORION_HARD_INLINE                       \
+    void                                    \
+    Insert (X * object, bool lookat = true) \
+    {                                       \
+        if (!object)                        \
+            return;                         \
+                                            \
+        if (lookat)                         \
+            for (X * in : Y)                \
+                if (in == object)           \
+                    return;                 \
+                                            \
+        Y.push_back (object);               \
+                                            \
+        return;                             \
     }
 
 #define REMOVE_THE(X, Y)           \
@@ -48,6 +49,19 @@
     ul_t GetNumberOf##X##s () const \
     {                               \
         return Y.size ();           \
+    }
+
+#define RESERVE_NUM_OF(X, Y)             \
+    ORION_HARD_INLINE                    \
+    void ReserveNumberOf##X##s (ul_t sz) \
+    {                                    \
+        for (X * object : Y)             \
+        {                                \
+            delete object;               \
+        }                                \
+        Y.clear ();                      \
+        Y.reserve (sz);                  \
+        return;                          \
     }
 
 #endif /* SRC_CORE_MACROS_HPP */

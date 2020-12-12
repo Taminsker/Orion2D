@@ -24,3 +24,15 @@ Mesh::~Mesh ()
         delete e;
     m_edges.clear ();
 }
+
+void
+Mesh::Print ()
+{
+    BEGIN << "Mesh stats" << ENDLINE;
+    std::cout << TREE_BRANCH << " Number of points : " << m_points.size () << ENDLINE;
+    std::cout << TREE_BRANCH << " Number of edges  : " << m_edges.size () << ENDLINE;
+    std::cout << TREE_BRANCH << " Number of cells  : " << m_cells.size () << ENDLINE;
+
+    ENDFUN;
+    return;
+}
