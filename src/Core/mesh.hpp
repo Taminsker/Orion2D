@@ -27,7 +27,7 @@ public:
     INSERT_THE (Cell, m_cells)
     REMOVE_THE (Cell, m_cells)
 
-    GET_THE (Edge, m_edges);
+    GET_THE (Edge, m_edges)
     GET_NUMBER_OF (Edge, m_edges)
     INSERT_THE (Edge, m_edges)
     REMOVE_THE (Edge, m_edges)

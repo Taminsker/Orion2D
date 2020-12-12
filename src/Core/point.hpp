@@ -9,9 +9,10 @@ class Edge;
 
 typedef enum
 {
+    INSIDE = -1,
     BORDER = 0,
-    INSIDE = 1,
-} LOC;
+    OUTSIDE = 1,
+} Loc;
 
 class Point
 {
@@ -19,22 +20,22 @@ public:
     // Coordonnées
     double x;
     double y;
+    double z;
 
     // Constructeurs et destructeur
-    Point ();
-    Point (double xval, double yval = 0.);
+    Point (double xval = 0., double yval = 0., double zval = 0.);
     Point (const Point & pointToCopy);
     ~Point ();
 
     // Accesseurs
-    LOC     GetLoc ();
+    Loc     GetLoc ();
     Point * GetNeighPoint (int i);
     Edge *  GetNeighEdge (int i);
     Cell *  GetNeighCell (int i);
     int     GetGlobalIndex ();
 
     // Changement d'attributs
-    void SetLOC (LOC loc);
+    void SetLoc (Loc loc);
     void SetGlobalIndex (int idx);
 
     // Insertion et retrait de connectivité
@@ -56,7 +57,7 @@ private:
     int m_globalIndex;
 
     // Localisation
-    LOC m_LOC;
+    Loc m_loc;
 
     // Connectivité
     std::vector<Point *> m_listOfPoints;  // Points voisins
