@@ -22,12 +22,12 @@ public:
     INSERT_THE (Point, m_points)
     REMOVE_THE (Point, m_points)
 
-    GET_THE (Cell, m_cells);
+    GET_THE (Cell, m_cells)
     GET_NUMBER_OF (Cell, m_cells)
     INSERT_THE (Cell, m_cells)
     REMOVE_THE (Cell, m_cells)
 
-    GET_THE (Edge, m_edges);
+    GET_THE (Edge, m_edges)
     GET_NUMBER_OF (Edge, m_edges)
     INSERT_THE (Edge, m_edges)
     REMOVE_THE (Edge, m_edges)

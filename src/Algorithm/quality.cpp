@@ -1,7 +1,7 @@
 #include "quality.hpp"
 #include "../Core/core.hpp"
 
-// Qualité d'un triangle ABC en 2D
+// Qualité d'un triangle ABC en 2D (attention : changements en 3D !!)
 double quality (Cell* cell)
 {
     if (cell->GetNumberOfPoints () != 3)
@@ -11,13 +11,15 @@ double quality (Cell* cell)
     Point* pB = cell->GetPoint (1);
     Point* pC = cell->GetPoint (2);
 
+    // En 3D, rajouter les composantes z
     double dAB = sqrt((pB->x - pA->x) * (pB->x - pA->x) + (pB->y - pA->y) * (pB->y - pA->y));
     double dAC = sqrt((pC->x - pA->x) * (pC->x - pA->x) + (pC->y - pA->y) * (pC->y - pA->y));
     double dBC = sqrt((pC->x - pB->x) * (pC->x - pB->x) + (pC->y - pB->y) * (pC->y - pB->y));
 
     double sum = dAB*dAB + dAC*dAC + dBC*dBC;
 
-    // Aire du triangle ABC = 0.5 * ||AB^AC|| = 0.5 * ||[0, 0, z_ABC]||
+    /* Aire du triangle ABC = 0.5 * ||AB^AC|| = 0.5 * ||[0, 0, z_ABC]||
+    Attention : en 3D, AB^AC n'est pas forcément selon (Oz) !! Calculer AB^AC... */
 
     // AB = u = [u0, u1]
     double u0 = pB->x - pA->x;
@@ -55,9 +57,9 @@ void histogram (std::vector<double> v)
 
     moy /= v.size ();
 
-    std::cout << "\nQualité minimum = "    << min     << "." << std::endl;
-    std::cout << "\nQualité maximum = "    << max     << "." << std::endl;
-    std::cout << "\nQualité moyenne = "    << moy     << "." << std::endl;
+    std::cout << "\nQualité minimum = " << min << "." << std::endl;
+    std::cout << "\nQualité maximum = " << max << "." << std::endl;
+    std::cout << "\nQualité moyenne = " << moy << "." << std::endl;
 
     std::cout << "\nQualités dans [1,2[      : " << over1   << ", soit " << 100.*over1/v.size ()   << " %." << std::endl;
     std::cout << "\nQualités dans [2,3[      : " << over2   << ", soit " << 100.*over2/v.size ()   << " %." << std::endl;

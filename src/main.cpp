@@ -18,15 +18,15 @@ main (int argc, char ** argv)
     Mesh input;
     Read (&input, filename);
 
-    // // TRIANGULATION
-    Mesh mesh;
-    VOID_USE (mesh);
+    // // // TRIANGULATION
+    // Mesh mesh;
+    // VOID_USE (mesh);
+    //
+    // // Force  Boundaries
+    // ForceBoundaries (&input, &mesh);
+    //
+    // // OUTPUT
+    // Write (&mesh, filename + ".orion.mesh");
 
-    // Force  Boundaries
-    ForceBoundaries (&input, &mesh);
-
-    // OUTPUT
-    Write (&mesh, filename + ".orion.mesh");
-
-        return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }

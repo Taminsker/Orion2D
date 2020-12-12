@@ -1,19 +1,23 @@
 #include "point.hpp"
+#include "cell.hpp"
+#include "edge.hpp"
 
 // LES METHODES
 
 // Constructeurs et destructeur
 
-Point::Point (double xval, double yval) : x (xval),
-                                          y (yval),
-                                          m_listOfPoints ({}),
-                                          m_listOfEdges ({}),
-                                          m_listOfCells ({})
+Point::Point (double xval, double yval, double zval) : x (xval),
+                                                       y (yval),
+                                                       z (zval),
+                                                       m_listOfPoints ({}),
+                                                       m_listOfEdges ({}),
+                                                       m_listOfCells ({})
 {
 }
 
 Point::Point (const Point & pointToCopy) : x (pointToCopy.x),
                                            y (pointToCopy.y),
+                                           z (pointToCopy.z),
                                            m_listOfPoints (pointToCopy.m_listOfPoints),
                                            m_listOfEdges (pointToCopy.m_listOfEdges),
                                            m_listOfCells (pointToCopy.m_listOfCells)
@@ -29,10 +33,10 @@ Point::~Point ()
 
 // Accesseurs
 
-LOC
+Loc
 Point::GetLoc ()
 {
-    return m_LOC;
+    return m_loc;
 }
 
 Point *
@@ -62,9 +66,9 @@ Point::GetGlobalIndex ()
 // Changement d'attributs
 
 void
-Point::SetLOC (LOC loc)
+Point::SetLoc (Loc loc)
 {
-    m_LOC = loc;
+    m_loc = loc;
 }
 
 void
@@ -168,6 +172,7 @@ Point::operator+= (const Point & b)
 {
     x += b.x;
     y += b.y;
+    z += b.z;
     return *this;
 }
 
@@ -176,6 +181,7 @@ Point::operator-= (const Point & b)
 {
     x -= b.x;
     y -= b.y;
+    z -= b.z;
     return *this;
 }
 
@@ -184,6 +190,7 @@ Point::operator*= (double k)
 {
     x *= k;
     y *= k;
+    z *= k;
     return *this;
 }
 
