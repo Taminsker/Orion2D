@@ -91,3 +91,14 @@ histogram (std::vector<double> v)
     ENDFUN;
     return;
 }
+
+// Renseigner le vecteur des qualités des éléments du maillage
+void ComputeQualities (Mesh* mesh, std::vector<real_t> * qualities)
+{
+    size_t size = mesh->GetNumberOfCells ();
+
+    for (size_t k = 0; k < size; ++k)
+        (*qualities) [k] = quality (mesh->GetCell (k));
+
+    return;
+}

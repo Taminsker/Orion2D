@@ -1,5 +1,5 @@
 
-hf = 5e-3;
+hf = 1e-5;
 hg = 1e0;
 
 // Point 1
@@ -38,4 +38,11 @@ Line(4) = {10, 11};
 Line(5) = {11, 8};
 
 Mesh 1;
+
+//+
+Curve Loop(1) = {2, 3, 4, 5};
+//+
+Curve Loop(2) = {1};
+//+
+Plane Surface(1) = {1, 2};
 

@@ -23,12 +23,12 @@ main (int argc, char ** argv)
     Read (&input, filename);
     input.Print ();
 
-    // ul_t numCells = input.GetNumberOfCells ();
-    // std::vector<real_t> qualities (numCells, -1.0);
-    // for (ul_t idCell = 0; idCell < numCells; ++idCell)
-    //     qualities [idCell] = quality (input.GetCell (idCell));
+    ul_t numCells = input.GetNumberOfCells ();
+    std::vector<real_t> qualities (numCells, -1.0);
 
-    // histogram (qualities);
+    ComputeQualities (&input);
+
+    histogram (qualities);
 
 
     // // // TRIANGULATION
@@ -39,7 +39,7 @@ main (int argc, char ** argv)
     // ForceBoundaries (&input, &mesh);
     //
     // // OUTPUT
-    Write (&input, filename + ".orion.mesh");
+    // Write (&input, filename + ".orion.mesh");
 
     return EXIT_SUCCESS;
 }
