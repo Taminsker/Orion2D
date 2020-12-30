@@ -20,7 +20,7 @@ public:
     INSERT_THE (Point, m_points)
     REMOVE_THE (Point, m_points)
 
-    GET_THE (Cell, m_cells);
+    GET_THE (Cell, m_cells)
     GET_NUMBER_OF (Cell, m_cells)
     INSERT_THE (Cell, m_cells)
     REMOVE_THE (Cell, m_cells)

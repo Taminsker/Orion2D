@@ -1,35 +1,28 @@
 #include "progressbar.hpp"
 
-ProgressBar::ProgressBar (std::string name, ul_t total) : m_name (name),
-                                                          m_size (total)
-{
-}
+ProgressBar::ProgressBar (std::string name, ul_t total) : m_name (name), m_size (total) {}
 
-ProgressBar::~ProgressBar ()
-{
-}
+ProgressBar::~ProgressBar () {}
 
 void
 ProgressBar::PutAt (ul_t i)
 {
     real_t progress = static_cast<real_t> (i) / m_size;
 
-    int barWidth = 70;
+    int barWidth = 30;
 
-    std::cout << m_name << std::string (10 - m_name.size (), ' ') << " [";
-    int pos = barWidth * progress;
+    std::cout << COLOR_GREEN << "\u27A4 " << COLOR_DEFAULT << m_name << std::string (10 - m_name.size (), ' ') << " ";
+    int pos = static_cast<int> (barWidth * progress);
 
     for (int i = 0; i < barWidth; ++i)
     {
-        if (i < pos)
-            std::cout << "=";
-        else if (i == pos)
-            std::cout << ">";
+        if (i <= pos)
+            std::cout << "\u25AE";
         else
             std::cout << " ";
     }
 
-    std::cout << "] " << int (progress * 100.0) << "% \r";
+    std::cout << " " << COLOR_YELLOW << int (progress * 100.0) << "% " << COLOR_DEFAULT << "       \r";
     std::cout.flush ();
 }
 

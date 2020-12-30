@@ -29,43 +29,47 @@ typedef std::queue<Point *> PointsQueue;
 #define ENDLINE           COLOR_DEFAULT << std::endl
 #define FLUSHLINE         COLOR_DEFAULT << std::flush
 #define SEPARATOR         "--------------------------"
-#define BEGIN             std::cout << REVERSE << "--> "
+#define BEGIN             std::cout << REVERSE << "\u279C "
 #define ENDFUN            std::cout << ENDLINE
 #define COUT              std::cout
 
 #define SPC  std::setw (15) <<
 #define NEXT " " <<
 
-#define USE_ERROR(X)       \
-    if (X == EXIT_FAILURE) \
-    {                      \
-        return X;          \
+#define USE_ERROR(X)                                                                                                   \
+    if (X == EXIT_FAILURE)                                                                                             \
+    {                                                                                                                  \
+        return X;                                                                                                      \
     }
-#define VOID_USE(X) (void)X
+#define VOID_USE(X) (void) X
 
-#define TRY(X)                     \
-    {                              \
-        error_t error = X;         \
-        if (error == EXIT_FAILURE) \
-        {                          \
-            return EXIT_FAILURE;   \
-        }                          \
+#define TRY(X)                                                                                                         \
+    {                                                                                                                  \
+        error_t error = X;                                                                                             \
+        if (error == EXIT_FAILURE)                                                                                     \
+        {                                                                                                              \
+            return EXIT_FAILURE;                                                                                       \
+        }                                                                                                              \
     }
 
 #ifdef DEBUG
-#define STATUS std::cout << "(" << __FUNCTION__ << ")\t" \
-                         << "Status : "
-#define INFOS std::cout << "(" << __FUNCTION__ << ")\t" \
-                        << " * "
-#define ERROR std::cerr << COLOR_RED << "(" << __FUNCTION__ << ")\t" \
-                        << " Error : "
-#define WARNING std::cout << COLOR_YELLOW << "(" << __FUNCTION__ << ")\t" \
-                          << " Warning : "
+#define STATUS                                                                                                         \
+    std::cout << "(" << __FUNCTION__ << ")\t"                                                                          \
+              << "Status : "
+#define INFOS                                                                                                          \
+    std::cout << "(" << __FUNCTION__ << ")\t"                                                                          \
+              << " * "
+#define ERROR                                                                                                          \
+    std::cerr << COLOR_RED << "(" << __FUNCTION__ << ")\t"                                                             \
+              << " Error : "
+#define WARNING                                                                                                        \
+    std::cout << COLOR_YELLOW << "(" << __FUNCTION__ << ")\t"                                                          \
+              << " Warning : "
 #else
-#define STATUS  std::cout << "Status : "
-#define INFOS   std::cout << " * "
-#define ERROR   std::cerr << COLOR_RED << "Error : "
-#define WARNING std::cout << COLOR_YELLOW << "Warning : "
+#define STATUS  std::cout << COLOR_RED << "\u2699 " << COLOR_DEFAULT
+#define INFOS   std::cout << COLOR_GREEN << "\u27A4 " << COLOR_DEFAULT
+#define ERROR   std::cerr << COLOR_RED << "\u2692 "
+#define WARNING std::cout << COLOR_YELLOW << "\u26A0 "
 #endif
 
 #endif /* SRC_ORIONHEADER_HPP */

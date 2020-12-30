@@ -1,16 +1,18 @@
 #ifndef SRC_ALGORITHM_QUALITY_HPP
 #define SRC_ALGORITHM_QUALITY_HPP
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <vector>
 
 class Cell;
 
 // Qualité d'un triangle ABC en 2D
-double quality (Cell* cell);
+double
+ComputeQuality (Cell *cell);
 
 // Minimum, maximum, moyenne et répartition des qualités
-void histogram (std::vector<double> v);
+void
+MakeHistogram (std::vector<double> v);
 
 #endif /* SRC_ALGORITHM_QUALITY_HPP */

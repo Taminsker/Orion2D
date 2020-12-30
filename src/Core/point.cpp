@@ -1,4 +1,5 @@
 #include "point.hpp"
+
 #include "cell.hpp"
 #include "edge.hpp"
 
@@ -6,21 +7,23 @@
 
 // Constructeurs et destructeur
 
-Point::Point (double xval, double yval, double zval) : x (xval),
-                                                       y (yval),
-                                                       z (zval),
-                                                       m_listOfPoints ({}),
-                                                       m_listOfEdges ({}),
-                                                       m_listOfCells ({})
+Point::Point (real_t xval, real_t yval, real_t zval) :
+    x (xval),
+    y (yval),
+    z (zval),
+    m_listOfPoints ({}),
+    m_listOfEdges ({}),
+    m_listOfCells ({})
 {
 }
 
-Point::Point (const Point & pointToCopy) : x (pointToCopy.x),
-                                           y (pointToCopy.y),
-                                           z (pointToCopy.z),
-                                           m_listOfPoints (pointToCopy.m_listOfPoints),
-                                           m_listOfEdges (pointToCopy.m_listOfEdges),
-                                           m_listOfCells (pointToCopy.m_listOfCells)
+Point::Point (const Point &pointToCopy) :
+    x (pointToCopy.x),
+    y (pointToCopy.y),
+    z (pointToCopy.z),
+    m_listOfPoints (pointToCopy.m_listOfPoints),
+    m_listOfEdges (pointToCopy.m_listOfEdges),
+    m_listOfCells (pointToCopy.m_listOfCells)
 {
 }
 
@@ -40,19 +43,19 @@ Point::GetLoc ()
 }
 
 Point *
-Point::GetNeighPoint (int i)
+Point::GetNeighPoint (ul_t i)
 {
     return m_listOfPoints [i];
 }
 
 Edge *
-Point::GetNeighEdge (int i)
+Point::GetNeighEdge (ul_t i)
 {
     return m_listOfEdges [i];
 }
 
 Cell *
-Point::GetNeighCell (int i)
+Point::GetNeighCell (ul_t i)
 {
     return m_listOfCells [i];
 }
@@ -79,12 +82,12 @@ Point::SetGlobalIndex (int idx)
 
 // Insertion et retrait de connectivité
 void
-Point::InsertNeighPoint (Point * newPoint)
+Point::InsertNeighPoint (Point *newPoint)
 {
     if (newPoint == nullptr)
         return;
 
-    for (Point * p : m_listOfPoints)
+    for (Point *p : m_listOfPoints)
     {
         if (p == newPoint)
             return;
@@ -94,12 +97,12 @@ Point::InsertNeighPoint (Point * newPoint)
 }
 
 void
-Point::InsertNeighEdge (Edge * newEdge)
+Point::InsertNeighEdge (Edge *newEdge)
 {
     if (newEdge == nullptr)
         return;
 
-    for (Edge * e : m_listOfEdges)
+    for (Edge *e : m_listOfEdges)
     {
         if (e == newEdge)
             return;
@@ -109,12 +112,12 @@ Point::InsertNeighEdge (Edge * newEdge)
 }
 
 void
-Point::InsertNeighCell (Cell * newCell)
+Point::InsertNeighCell (Cell *newCell)
 {
     if (newCell == nullptr)
         return;
 
-    for (Cell * c : m_listOfCells)
+    for (Cell *c : m_listOfCells)
     {
         if (c == newCell)
             return;
@@ -124,11 +127,11 @@ Point::InsertNeighCell (Cell * newCell)
 }
 
 void
-Point::RemoveNeighPoint (Point * pointOut)
+Point::RemoveNeighPoint (Point *pointOut)
 {
     std::vector<Point *> newList = {};
 
-    for (Point * p : m_listOfPoints)
+    for (Point *p : m_listOfPoints)
     {
         if (p != pointOut)
             newList.push_back (p);
@@ -138,11 +141,11 @@ Point::RemoveNeighPoint (Point * pointOut)
 }
 
 void
-Point::RemoveNeighEdge (Edge * edgeOut)
+Point::RemoveNeighEdge (Edge *edgeOut)
 {
     std::vector<Edge *> newList = {};
 
-    for (Edge * e : m_listOfEdges)
+    for (Edge *e : m_listOfEdges)
     {
         if (e != edgeOut)
             newList.push_back (e);
@@ -152,11 +155,11 @@ Point::RemoveNeighEdge (Edge * edgeOut)
 }
 
 void
-Point::RemoveNeighCell (Cell * cellOut)
+Point::RemoveNeighCell (Cell *cellOut)
 {
     std::vector<Cell *> newList = {};
 
-    for (Cell * c : m_listOfCells)
+    for (Cell *c : m_listOfCells)
     {
         if (c != cellOut)
             newList.push_back (c);
@@ -168,7 +171,7 @@ Point::RemoveNeighCell (Cell * cellOut)
 // Opérations sur les points
 
 Point &
-Point::operator+= (const Point & b)
+Point::operator+= (const Point &b)
 {
     x += b.x;
     y += b.y;
@@ -177,7 +180,7 @@ Point::operator+= (const Point & b)
 }
 
 Point &
-Point::operator-= (const Point & b)
+Point::operator-= (const Point &b)
 {
     x -= b.x;
     y -= b.y;
@@ -186,7 +189,7 @@ Point::operator-= (const Point & b)
 }
 
 Point &
-Point::operator*= (double k)
+Point::operator*= (real_t k)
 {
     x *= k;
     y *= k;
@@ -197,7 +200,7 @@ Point::operator*= (double k)
 // LES FONCTIONS
 
 Point
-operator+ (const Point & a, const Point & b)
+operator+ (const Point &a, const Point &b)
 {
     Point res = a;
     res += b;
@@ -205,7 +208,7 @@ operator+ (const Point & a, const Point & b)
 }
 
 Point
-operator- (const Point & a, const Point & b)
+operator- (const Point &a, const Point &b)
 {
     Point res = a;
     res -= b;
@@ -213,7 +216,7 @@ operator- (const Point & a, const Point & b)
 }
 
 Point
-operator* (const Point & a, double k)
+operator* (const Point &a, real_t k)
 {
     Point res = a;
     res *= k;
@@ -221,7 +224,7 @@ operator* (const Point & a, double k)
 }
 
 Point
-operator* (double k, const Point & a)
+operator* (real_t k, const Point &a)
 {
     return a * k;
 }
