@@ -1,9 +1,8 @@
-#ifndef SRC_ALGORITHM_ALGORITHM_HPP
-#define SRC_ALGORITHM_ALGORITHM_HPP
+#ifndef ALGORITHM_HPP
+#define ALGORITHM_HPP
 
 #include "boundary.hpp"
 #include "delaunay.hpp"
 #include "quality.hpp"
-#include "swap.hpp"
 
-#endif /* SRC_ALGORITHM_ALGORITHM_HPP */
+#endif  // ALGORITHM_HPP

@@ -1,14 +1,12 @@
 #include "io.hpp"
 
 #include "../Core/core.hpp"
-#include "../Tools/progressbar.hpp"
-#include "../orionheader.hpp"
 
 void
 Read (Mesh *mesh, std::string filename)
 {
-    // VOID_USE (mesh); (void)mesh;
-    // VOID_USE (filename);
+    // ORION_UNUSED (mesh); (void)mesh;
+    // ORION_UNUSED (filename);
 
     std::ifstream fichier (filename);
 
@@ -34,18 +32,17 @@ Read (Mesh *mesh, std::string filename)
             ul_t nbPoints = 0;
             fichier >> nbPoints >> std::ws;
 
-            mesh->ReserveNumberOfPoints (nbPoints);
+            mesh->points.reserve (nbPoints);
+
+            Point  newPoint;
+            int    couleur;
+            real_t trash;
 
             for (ul_t k = 0; k < nbPoints; ++k)
             {
-                Point *newPoint = new Point ();
-                int    couleur;
+                fichier >> newPoint [0] >> newPoint [1] >> trash >> couleur >> std::ws;
 
-                fichier >> newPoint->x >> newPoint->y >> newPoint->z >> couleur >> std::ws;
-
-                newPoint->SetGlobalIndex (static_cast<int> (k));
-
-                mesh->Insert (newPoint, false);
+                mesh->InsertPoint (newPoint);
             }
 
             INFOS << "Read points [" << nbPoints << "]." << ENDLINE;
@@ -53,35 +50,21 @@ Read (Mesh *mesh, std::string filename)
             // INFOS << "Nombre de sommets : " << nbPoints << "." << ENDLINE;
             // INFOS << "Nombre de sommets : " << mesh->GetNumberOfPoints () << "." << ENDLINE;
         }
-
         else if (mot == "Edges")
         {
             ul_t nbEdges = 0;
             fichier >> nbEdges >> std::ws;
 
-            mesh->ReserveNumberOfEdges (nbEdges);
+            mesh->edges.reserve (nbEdges);
+
+            idx_t index_pt1, index_pt2;
+            int   couleur;
 
             for (ul_t k = 0; k < nbEdges; ++k)
             {
-                ul_t index_pt1, index_pt2;
-                int  couleur;
-
-                Edge *newEdge = new Edge ();
-
                 fichier >> index_pt1 >> index_pt2 >> couleur >> std::ws;
 
-                index_pt1--;
-                index_pt2--;
-
-                // Rajout des 2 points qui définissent l'arête newEdge
-                newEdge->Insert (mesh->GetPoint (index_pt1));
-                newEdge->Insert (mesh->GetPoint (index_pt2));
-
-                // Signaler que les 2 points appartiennent à l'arête newEdge
-                mesh->GetPoint (index_pt1)->InsertNeighEdge (newEdge);
-                mesh->GetPoint (index_pt2)->InsertNeighEdge (newEdge);
-
-                mesh->Insert (newEdge, false);
+                mesh->InsertEdge (--index_pt1, --index_pt2);
             }
 
             INFOS << "Read edges [" << nbEdges << "]." << ENDLINE;
@@ -89,39 +72,26 @@ Read (Mesh *mesh, std::string filename)
             // INFOS << "Nombre d'arêtes : " << nbEdges << "." << ENDLINE;
             // INFOS << "Nombre d'arêtes : " << mesh->GetNumberOfEdges () << "." << ENDLINE;
         }
-
         else if (mot == "Triangles")
         {
             ul_t nbTriangles = 0;
 
             fichier >> nbTriangles >> std::ws;
 
-            mesh->ReserveNumberOfCells (nbTriangles);
+            mesh->triangles.reserve (nbTriangles);
+            mesh->areas.reserve (nbTriangles);
+            mesh->circumcenters.reserve (nbTriangles);
+            mesh->radius.reserve (nbTriangles);
+            mesh->qualities.reserve (nbTriangles);
+
+            int index_pt1, index_pt2, index_pt3;
+            int couleur;
 
             for (ul_t k = 0; k < nbTriangles; ++k)
             {
-                ul_t index_pt1, index_pt2, index_pt3;
-                int  couleur;
-
-                Cell *newCell = new Cell ();
-
                 fichier >> index_pt1 >> index_pt2 >> index_pt3 >> couleur >> std::ws;
 
-                index_pt1--;
-                index_pt2--;
-                index_pt3--;
-
-                // Rajout des 3 points qui définissent la cellule newCell
-                newCell->Insert (mesh->GetPoint (index_pt1));
-                newCell->Insert (mesh->GetPoint (index_pt2));
-                newCell->Insert (mesh->GetPoint (index_pt3));
-
-                // Signaler que les 3 points appartiennent à la cellule newCell
-                mesh->GetPoint (index_pt1)->InsertNeighCell (newCell);
-                mesh->GetPoint (index_pt2)->InsertNeighCell (newCell);
-                mesh->GetPoint (index_pt3)->InsertNeighCell (newCell);
-
-                mesh->Insert (newCell, false);
+                mesh->InsertTriangle (--index_pt1, --index_pt2, --index_pt3);
             }
 
             INFOS << "Read triangles [" << nbTriangles << "]." << ENDLINE;
@@ -143,64 +113,29 @@ Write (Mesh *mesh, std::string filename)
 
     std::ofstream out (filename);
 
-    out << "MeshVersionFormatted\n2\nDimension\n3\n\nVertices" << std::endl;
+    out << "MeshVersionFormatted\n2\nDimension\n2\n\nVertices" << std::endl;
 
-    ul_t numPoints = mesh->GetNumberOfPoints ();
+    out << mesh->points.size () << std::endl;
+    for (Point &p : mesh->points)
+        out << SPC p [0] << SPC p [1] << SPC 1 << std::endl;
 
-    out << numPoints << std::endl;
-    for (ul_t idPoint = 0; idPoint < numPoints; ++idPoint)
-    {
-        Point *p = mesh->GetPoint (idPoint);
-
-        out << SPC p->x << SPC p->y << SPC p->z << SPC 1 << std::endl;
-    }
-
-    INFOS << "Points written [" << mesh->GetNumberOfPoints () << "]." << ENDLINE;
-
-    ul_t numEdges = mesh->GetNumberOfEdges ();
+    INFOS << "Points written [" << mesh->points.size () << "]." << ENDLINE;
 
     out << "\nEdges" << std::endl;
-    out << numEdges << std::endl;
+    out << mesh->edges.size () << std::endl;
 
-    for (ul_t idEdge = 0; idEdge < numEdges; ++idEdge)
-    {
-        Edge *e = mesh->GetEdge (idEdge);
+    for (Edge &e : mesh->edges)
+        out << SPC e [0] + 1 << SPC e [1] + 1 << SPC 1 << std::endl;
 
-        ul_t numptOnEdge = e->GetNumberOfPoints ();
+    INFOS << "Edges written [" << mesh->edges.size () << "]." << ENDLINE;
 
-        for (ul_t idPoint = 0; idPoint < numptOnEdge; ++idPoint)
-        {
-            Point *p = e->GetPoint (idPoint);
-
-            out << SPC p->GetGlobalIndex () + 1 << std::flush;
-        }
-
-        out << SPC 1 << std::endl;
-    }
-
-    INFOS << "Edges written [" << mesh->GetNumberOfEdges () << "]." << ENDLINE;
-
-    ul_t numCells = mesh->GetNumberOfCells ();
     out << "\n\nTriangles" << std::endl;
-    out << numCells << std::endl;
+    out << mesh->triangles.size () << std::endl;
 
-    for (ul_t idCell = 0; idCell < numCells; ++idCell)
-    {
-        Cell *c = mesh->GetCell (idCell);
+    for (Triangle &tri : mesh->triangles)
+        out << SPC tri [0] + 1 << SPC tri [1] + 1 << SPC tri [2] + 1 << SPC 1 << std::endl;
 
-        ul_t numptOnCell = c->GetNumberOfPoints ();
-
-        for (ul_t idPoint = 0; idPoint < numptOnCell; ++idPoint)
-        {
-            Point *p = c->GetPoint (idPoint);
-
-            out << SPC p->GetGlobalIndex () + 1 << std::flush;
-        }
-
-        out << SPC 1 << std::endl;
-    }
-
-    INFOS << "Cells written [" << mesh->GetNumberOfCells () << "]." << ENDLINE;
+    INFOS << "Cells written [" << mesh->triangles.size () << "]." << ENDLINE;
 
     out << "END" << std::endl;
 

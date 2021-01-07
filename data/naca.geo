@@ -39,9 +39,5 @@ Line(5) = {11, 8};
 
 Mesh 1;
 
-//+
 Curve Loop(1) = {3, 4, 5, 2};
-//+
-Curve Loop(2) = {1};
-//+
-Plane Surface(1) = {1, 2};
+

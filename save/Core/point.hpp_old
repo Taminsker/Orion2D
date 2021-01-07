@@ -1,0 +1,112 @@
+//#ifndef SRC_DATA_POINT_HPP
+//#define SRC_DATA_POINT_HPP
+
+//#include <iostream>
+//#include <vector>
+
+//#include "../Tools/smartpointer.hpp"
+//#include "../orionglobal.hpp"
+
+//class Cell;
+//class Edge;
+
+//typedef enum
+//{
+//    INSIDE  = -1,
+//    BORDER  = 0,
+//    OUTSIDE = 1,
+//} LOC;
+
+//class Point
+//{
+//public:
+//    // Coordonnées
+//    real_t x;
+//    real_t y;
+//    real_t z;
+
+//    // Constructeurs et destructeur
+//    Point (real_t xval = 0., real_t yval = 0., real_t zval = 0.);
+
+//    Point (const Point &pointToCopy);
+
+//    ~Point ();
+
+//    // Accesseurs
+//    LOC
+//    GetLoc ();
+
+//    Smart<Point>
+//    GetNeighPoint (ul_t i);
+
+//    Smart<Edge>
+//    GetNeighEdge (ul_t i);
+
+//    Smart<Cell>
+//    GetNeighCell (ul_t i);
+
+//    int
+//    GetGlobalIndex ();
+
+//    // Changement d'attributs
+//    void
+//    SetLoc (LOC loc);
+
+//    void
+//    SetGlobalIndex (int idx);
+
+//    // Insertion et retrait de connectivité
+//    void
+//    InsertNeighPoint (Smart<Point> newPoint);
+
+//    void
+//    InsertNeighEdge (Smart<Edge> newEdge);
+
+//    void
+//    InsertNeighCell (Smart<Cell> newCell);
+
+//    void
+//    RemoveNeighPoint (Smart<Point> pointOut);
+
+//    void
+//    RemoveNeighEdge (Smart<Edge> edgeOut);
+
+//    void
+//    RemoveNeighCell (Smart<Cell> cellOut);
+
+//    // Opérations sur les points
+//    Point &
+//    operator+= (const Point &b);
+
+//    Point &
+//    operator-= (const Point &b);
+
+//    Point &
+//    operator*= (real_t k);
+
+//private:
+//    // Indice dans la numérotation globale
+//    int m_globalIndex;
+
+//    // Localisation
+//    LOC m_loc;
+
+//    // Connectivité
+//    std::vector<Smart<Point>> m_listOfPoints;  // Points voisins
+//    std::vector<Smart<Edge>>  m_listOfEdges;   // Arêtes auxquelles il appartient
+//    std::vector<Smart<Cell>>  m_listOfCells;   // Cellules auxquelles il appartient
+//};
+
+//Point
+//operator+ (const Point &a, const Point &b);
+
+//Point
+//operator- (const Point &a, const Point &b);
+
+//Point
+//operator* (const Point &a, real_t k);
+
+//Point
+//operator* (real_t k, const Point &a);
+
+//#endif /* SRC_DATA_POINT_HPP */

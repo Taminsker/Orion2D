@@ -5,14 +5,14 @@
 #include <iomanip>
 #include <iostream>
 
-#include "../orionheader.hpp"
+#include "../orionglobal.hpp"
 
-class Mesh;
-
-void
-Read (Mesh * mesh, std::string filename);
+struct Mesh;
 
 void
-Write (Mesh * mesh, std::string filename);
+Read (Mesh *mesh, std::string filename);
+
+void
+Write (Mesh *mesh, std::string filename);
 
 #endif /* SRC_IO_IO_HPP */

@@ -1,11 +1,19 @@
-#ifndef SRC_ALGORITHM_DELAUNAY_HPP
-#define SRC_ALGORITHM_DELAUNAY_HPP
+#ifndef DELAUNAY_HPP
+#define DELAUNAY_HPP
 
-class Point;
-class Mesh;
+#include "../Core/core.hpp"
 
-void DelaunayOne (Point * p, Mesh * output);
+// Pour savoir si le point p est dans le cercle circonscrit à la cellule edge
+bool
+PointInCircle (Mesh *mesh, Point &p, ul_t id);
 
-void DelaunayTriangulation (Mesh * input, Mesh * output);
+bool
+PointInTriangle (Mesh *mesh, Point &p, ul_t id);
 
-#endif /* SRC_ALGORITHM_DELAUNAY_HPP */
+void
+DelaunayKernel (Point &p, Mesh *output);
+
+void
+DelaunayTriangulation (Mesh *input, Mesh *output);
+
+#endif  // DELAUNAY_HPP

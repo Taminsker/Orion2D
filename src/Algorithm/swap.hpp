@@ -1,3 +1,4 @@
-#ifndef SRC_ALGORITHM_SWAP_HPP
-#define SRC_ALGORITHM_SWAP_HPP
-#endif /* SRC_ALGORITHM_SWAP_HPP */
+#ifndef SWAP_HPP
+#define SWAP_HPP
+
+#endif // SWAP_HPP

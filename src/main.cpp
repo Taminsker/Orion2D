@@ -2,6 +2,7 @@
 #include "Algorithm/algorithm.hpp"
 #include "Core/core.hpp"
 #include "IO/io.hpp"
+#include "orionglobal.hpp"
 
 error_t
 main (int argc, char **argv)
@@ -16,29 +17,49 @@ main (int argc, char **argv)
     std::cout << COLOR_YELLOW << REVERSE << " Welcome in Orion2D !" << ENDLINE;
     std::cout << COLOR_YELLOW << std::string (50, '-') << ENDLINE;
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
     // INPUT
+    //
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     std::string filename = argv [1];
 
     Mesh input;
     Read (&input, filename);
-    input.Print ();
+    PrintStatistics (&input, "input");
 
-    ul_t                numCells = input.GetNumberOfCells ();
-    std::vector<real_t> qualities (numCells, -1.0);
-    for (ul_t idCell = 0; idCell < numCells; ++idCell)
-        qualities [idCell] = ComputeQuality (input.GetCell (idCell));
-
-    MakeHistogram (qualities);
-
-    // // // TRIANGULATION
-    // Mesh mesh;
-    // VOID_USE (mesh);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // // Force  Boundaries
-    // ForceBoundaries (&input, &mesh);
+    // TRIANGULATION
     //
-    // // OUTPUT
-    Write (&input, filename + ".orion.mesh");
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Mesh output;
+    DelaunayTriangulation (&input, &output);
+    PrintStatistics (&output, "output");
+
+    MakeHistogram (&output);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Force  Boundaries
+    //
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ForceBoundaries (&input, &output);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // OUTPUT
+    //
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    size_t pos = filename.find (".mesh");
+    if (pos != std::string::npos)
+        filename.erase (pos, 5);
+
+    Write (&output, filename + "_orion.mesh");
 
     return EXIT_SUCCESS;
 }

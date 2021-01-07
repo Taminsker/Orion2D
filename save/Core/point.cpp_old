@@ -1,0 +1,230 @@
+//#include "point.hpp_old"
+
+//#include "cell.hpp"
+//#include "edge.hpp"
+
+//// LES METHODES
+
+//// Constructeurs et destructeur
+
+//Point::Point (real_t xval, real_t yval, real_t zval) :
+//    x (xval),
+//    y (yval),
+//    z (zval),
+//    m_listOfPoints ({}),
+//    m_listOfEdges ({}),
+//    m_listOfCells ({})
+//{
+//}
+
+//Point::Point (const Point &pointToCopy) :
+//    x (pointToCopy.x),
+//    y (pointToCopy.y),
+//    z (pointToCopy.z),
+//    m_listOfPoints (pointToCopy.m_listOfPoints),
+//    m_listOfEdges (pointToCopy.m_listOfEdges),
+//    m_listOfCells (pointToCopy.m_listOfCells)
+//{
+//}
+
+//Point::~Point ()
+//{
+//    m_listOfPoints.clear ();
+//    m_listOfEdges.clear ();
+//    m_listOfCells.clear ();
+//}
+
+//// Accesseurs
+
+//LOC
+//Point::GetLoc ()
+//{
+//    return m_loc;
+//}
+
+//Smart<Point>
+//Point::GetNeighPoint (ul_t i)
+//{
+//    return m_listOfPoints [i];
+//}
+
+//Smart<Edge>
+//Point::GetNeighEdge (ul_t i)
+//{
+//    return m_listOfEdges [i];
+//}
+
+//Smart<Cell>
+//Point::GetNeighCell (ul_t i)
+//{
+//    return m_listOfCells [i];
+//}
+
+//int
+//Point::GetGlobalIndex ()
+//{
+//    return m_globalIndex;
+//}
+
+//// Changement d'attributs
+
+//void
+//Point::SetLoc (LOC loc)
+//{
+//    m_loc = loc;
+//}
+
+//void
+//Point::SetGlobalIndex (int idx)
+//{
+//    m_globalIndex = idx;
+//}
+
+//// Insertion et retrait de connectivité
+//void
+//Point::InsertNeighPoint (Smart<Point> newPoint)
+//{
+//    if (newPoint == nullptr)
+//        return;
+
+//    for (Smart<Point> p : m_listOfPoints)
+//    {
+//        if (p == newPoint)
+//            return;
+//    }
+
+//    m_listOfPoints.push_back (newPoint);
+//}
+
+//void
+//Point::InsertNeighEdge (Smart<Edge> newEdge)
+//{
+//    if (newEdge == nullptr)
+//        return;
+
+//    for (Smart<Edge> e : m_listOfEdges)
+//    {
+//        if (e == newEdge)
+//            return;
+//    }
+
+//    m_listOfEdges.push_back (newEdge);
+//}
+
+//void
+//Point::InsertNeighCell (Smart<Cell> newCell)
+//{
+//    if (newCell == nullptr)
+//        return;
+
+//    for (Smart<Cell> c : m_listOfCells)
+//    {
+//        if (c == newCell)
+//            return;
+//    }
+
+//    m_listOfCells.push_back (newCell);
+//}
+
+//void
+//Point::RemoveNeighPoint (Smart<Point> pointOut)
+//{
+//    std::vector<Smart<Point> > newList = {};
+
+//    for (Smart<Point> p : m_listOfPoints)
+//    {
+//        if (p != pointOut)
+//            newList.push_back (p);
+//    }
+
+//    m_listOfPoints = newList;
+//}
+
+//void
+//Point::RemoveNeighEdge (Smart<Edge> edgeOut)
+//{
+//    std::vector<Smart<Edge> > newList = {};
+
+//    for (Smart<Edge> e : m_listOfEdges)
+//    {
+//        if (e != edgeOut)
+//            newList.push_back (e);
+//    }
+
+//    m_listOfEdges = newList;
+//}
+
+//void
+//Point::RemoveNeighCell (Smart<Cell> cellOut)
+//{
+//    std::vector<Smart<Cell> > newList = {};
+
+//    for (Smart<Cell> c : m_listOfCells)
+//    {
+//        if (c != cellOut)
+//            newList.push_back (c);
+//    }
+
+//    m_listOfCells = newList;
+//}
+
+//// Opérations sur les points
+
+//Point &
+//Point::operator+= (const Point &b)
+//{
+//    x += b.x;
+//    y += b.y;
+//    z += b.z;
+//    return *this;
+//}
+
+//Point &
+//Point::operator-= (const Point &b)
+//{
+//    x -= b.x;
+//    y -= b.y;
+//    z -= b.z;
+//    return *this;
+//}
+
+//Point &
+//Point::operator*= (real_t k)
+//{
+//    x *= k;
+//    y *= k;
+//    z *= k;
+//    return *this;
+//}
+
+//// LES FONCTIONS
+
+//Point
+//operator+ (const Point &a, const Point &b)
+//{
+//    Point res = a;
+//    res += b;
+//    return res;
+//}
+
+//Point
+//operator- (const Point &a, const Point &b)
+//{
+//    Point res = a;
+//    res -= b;
+//    return res;
+//}
+
+//Point
+//operator* (const Point &a, real_t k)
+//{
+//    Point res = a;
+//    res *= k;
+//    return res;
+//}
+
+//Point
+//operator* (real_t k, const Point &a)
+//{
+//    return a * k;
+//}
