@@ -81,6 +81,7 @@ Read (Mesh *mesh, std::string filename)
             mesh->triangles.reserve (nbTriangles);
             mesh->areas.reserve (nbTriangles);
             mesh->circumcenters.reserve (nbTriangles);
+            mesh->masscenters.reserve (nbTriangles);
             mesh->radius.reserve (nbTriangles);
             mesh->qualities.reserve (nbTriangles);
 
@@ -138,6 +139,30 @@ Write (Mesh *mesh, std::string filename)
     INFOS << "Cells written [" << mesh->triangles.size () << "]." << ENDLINE;
 
     out << "END" << std::endl;
+
+    out.close ();
+
+    STATUS << "Done !" << ENDLINE;
+
+    ENDFUN;
+    return;
+}
+
+
+void
+WriteBB (Mesh *mesh, std::string filename)
+{
+    BEGIN << "Write[BB] the file " << filename << ENDLINE;
+
+    std::ofstream out (filename);
+
+    ul_t numTriangles = mesh->triangles.size ();
+    out << "2 1 " << numTriangles << " 1 "<< std::endl;
+
+    for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
+        out << SPC mesh->qualities [idTri] << std::endl;
+
+    INFOS << "Qualities written [" << mesh->triangles.size () << "]." << ENDLINE;
 
     out.close ();
 

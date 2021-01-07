@@ -60,6 +60,8 @@ main (int argc, char **argv)
         filename.erase (pos, 5);
 
     Write (&output, filename + "_orion.mesh");
+    WriteBB (&output, filename + "_orion.bb");
+
 
     return EXIT_SUCCESS;
 }

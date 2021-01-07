@@ -22,25 +22,44 @@ PointInCircle (Mesh *mesh, Point &p, ul_t id)
     return false;
 }
 
-bool
-PointInTriangle (Mesh *mesh, Point &p, ul_t id)
-{
-    if (!IsValid (mesh->triangles [id]))
-        return false;
-
-    Triangle &tri  = mesh->triangles [id];
-    real_t    area = mesh->areas [id];
-
-    Point &pA = mesh->points [static_cast<ul_t> (tri [0])];
-    Point &pB = mesh->points [static_cast<ul_t> (tri [1])];
-    Point &pC = mesh->points [static_cast<ul_t> (tri [2])];
-
-    int    sign = area < 0 ? -1 : 1;
-    real_t s    = (pA [1] * pC [0] - pA [0] * pC [1] + (pC [1] - pA [1]) * p [0] + (pA [0] - pC [0]) * p [1]) * sign;
-    real_t t    = (pA [0] * pB [1] - pA [1] * pB [0] + (pA [1] - pB [1]) * p [0] + (pB [0] - pA [0]) * p [1]) * sign;
-
-    return s > 0 && t > 0 && (s + t) < 2 * area * sign;
-}
+// bool
+// PointInTriangle (Mesh *mesh, Point &p, ul_t id)
+// {
+//     if (!IsValid (mesh->triangles [id]))
+//         return false;
+//
+//     Triangle &tri  = mesh->triangles [id];
+//     // real_t    area = mesh->areas [id];
+//
+//     Point &pA = mesh->points [static_cast<ul_t> (tri [0])];
+//     Point &pB = mesh->points [static_cast<ul_t> (tri [1])];
+//     Point &pC = mesh->points [static_cast<ul_t> (tri [2])];
+//
+//     real_t area = 1./2. * (-pB[1] * pC[0] + pA[0] * (-pB[0] + pC[0]) + pA[0] * (pB[1] - pC[1]) + pB[0] * pC[1]);
+//     //
+//     int    sign = area < 0 ? -1 : 1;
+//     // real_t s    = (pA [1] * pC [0] - pA [0] * pC [1] + (pC [1] - pA [1]) * p [0] + (pA [0] - pC [0]) * p [1]) * sign;
+//     // real_t t    = (pA [0] * pB [1] - pA [1] * pB [0] + (pA [1] - pB [1]) * p [0] + (pB [0] - pA [0]) * p [1]) * sign;
+//     //
+//     // return s > 0 && t > 0 && (s + t) < 2 * area * sign;
+//
+//     Point u = pB - pA;
+//     Point v = p - pA;
+//     if (u[0] * v[1] - u[1] * v[0] < 0)
+//         return false;
+//
+//     u = pC - pB;
+//     v = p - pA;
+//     if (u[0] * v[1] - u[1] * v[0] < 0)
+//         return false;
+//
+//     u = pA - pC;
+//     v = p - pB;
+//     if (u[0] * v[1] - u[1] * v[0] < 0)
+//         return false;
+//
+//     return true;
+// }
 
 void
 DelaunayKernel (Point &p, Mesh *output)
@@ -110,7 +129,7 @@ DelaunayTriangulation (Mesh *input, Mesh *output)
         minp [1] = std::min (minp [1], p [1]);
     }
 
-    real_t eps = std::max (maxp [0] - minp [0], maxp [1] - minp [1]) * 0.2;  // add a box of 20% of the size
+    real_t eps = std::max (maxp [0] - minp [0], maxp [1] - minp [1]) * 0.7;  // add a box of 20% of the size
 
     minp [0] -= eps;
     minp [1] -= eps;
@@ -136,7 +155,7 @@ DelaunayTriangulation (Mesh *input, Mesh *output)
     for (Point &p : input->points)
         DelaunayKernel (p, output);
 
-    INFOS << numPoints << " added                                   " << ENDLINE;
+    INFOS << numPoints << " added " << ENDLINE;
 
     //    PurgeInvalids (output);
     //    INFOS << "purge invalids ! " << ENDLINE;
@@ -151,7 +170,7 @@ DelaunayTriangulation (Mesh *input, Mesh *output)
     ul_t count_loop     = 0;
     ul_t count_inserted = 0;
 
-    while (myboolean && count_loop < 20)
+    while (myboolean && count_loop < 3)
     {
         myboolean = false;
         count_loop++;
@@ -159,14 +178,25 @@ DelaunayTriangulation (Mesh *input, Mesh *output)
         ul_t numTriangles = output->triangles.size ();
         for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
         {
-            if (IsValid (output->triangles [idTri]) && output->qualities [idTri] > 100)
+            if (IsValid (output->triangles [idTri]) && output->qualities [idTri] > 1.5 && output->areas[idTri] > 1e-8)
             {
                 /////////////////////////////////////////////////////////////////////////////////////////////
-                Point &p = output->circumcenters [idTri];
+                Point &p = output->masscenters [idTri];
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
                 if (p [0] < minp [0] || p [0] > maxp [0] || p [1] < minp [1] || p [1] > maxp [1])
                     continue;
+                //
+                // if (!PointInTriangle (output, p, idTri))
+                // {
+                //     ERROR << "You try to add the point " << p[0] << " " << p[1] << " in triangle " << idTri << ". But failed." << ENDLINE;
+                //     ERROR << output->points[output->triangles[idTri][0]][0] << " " <<  output->points[output->triangles[idTri][0]][1] << ENDLINE;
+                //     ERROR << output->points[output->triangles[idTri][1]][0] << " " <<  output->points[output->triangles[idTri][1]][1] << ENDLINE;
+                //     ERROR << output->points[output->triangles[idTri][2]][0] << " " <<  output->points[output->triangles[idTri][2]][1] << ENDLINE;
+                //
+                //     ENDFUN;
+                //     continue;
+                // }
 
                 DelaunayKernel (p, output);
 
@@ -174,12 +204,15 @@ DelaunayTriangulation (Mesh *input, Mesh *output)
                 myboolean = true;
             }
         }
+        INFOS << "Insert centers " << count_inserted << " [in loop " << count_loop << "]" << ENDLINE;
 
-        INFOS << "Insert centers " << count_inserted << ENDLINE;
+
     }
 
+    INFOS << "Insert centers " << count_inserted << " [in loop " << count_loop << "]" << ENDLINE;
+
     PurgeInvalids (output);
-    INFOS << "purge invalids ! " << ENDLINE;
+    INFOS << "Purge invalids ! " << ENDLINE;
 
     STATUS << "Done !" << ENDLINE;
     ENDFUN;

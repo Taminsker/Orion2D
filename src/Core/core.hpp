@@ -7,9 +7,9 @@
 
 #include "../orionglobal.hpp"
 
-typedef std::array<real_t, 2> Point;
-typedef std::array<idx_t, 3>  Triangle;
-typedef std::array<idx_t, 2>  Edge;
+typedef std::array<real_t, 2> Point; // real_t[2]
+typedef std::array<idx_t, 3>  Triangle; //idx_t[3]
+typedef std::array<idx_t, 2>  Edge; // idx_t[2]
 
 typedef enum
 {
@@ -25,8 +25,6 @@ struct Mesh
     // Points part
     //
     /////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief points
-    ///
     std::vector<Point> points;
     std::vector<LOC>   tagpoints;
 
@@ -41,8 +39,7 @@ struct Mesh
     // Cells parts
     //
     /////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief triangles
-    ///
+
     std::vector<Triangle> triangles;
     std::vector<real_t>   areas;
     std::vector<Point>    circumcenters;
@@ -119,4 +116,5 @@ operator* (const real_t &k, const Point &a)
 {
     return {k * a [0], k * a [1]};
 }
+
 #endif  // CORE_HPP

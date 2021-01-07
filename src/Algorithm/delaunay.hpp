@@ -7,8 +7,8 @@
 bool
 PointInCircle (Mesh *mesh, Point &p, ul_t id);
 
-bool
-PointInTriangle (Mesh *mesh, Point &p, ul_t id);
+// bool
+// PointInTriangle (Mesh *mesh, Point &p, ul_t id);
 
 void
 DelaunayKernel (Point &p, Mesh *output);
