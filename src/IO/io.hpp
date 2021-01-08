@@ -15,4 +15,6 @@ Read (Mesh *mesh, std::string filename);
 void
 Write (Mesh *mesh, std::string filename);
 
+void
+WriteBB (Mesh *mesh, std::string filename);
 #endif /* SRC_IO_IO_HPP */

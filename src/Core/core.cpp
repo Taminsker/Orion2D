@@ -102,7 +102,8 @@ Mesh::UpdateTriangle (ul_t id)
     // Mass center
     //
     /////////////////////////////////////////////////////////////////////////////////////////////
-    //    masscenters [id] = ...
+    masscenters [id][0] = (pA [0] + pB [0] + pC [0]) / 3.;
+    masscenters [id][1] = (pA [1] + pB [1] + pC [1]) / 3.;
 
     return;
 }
