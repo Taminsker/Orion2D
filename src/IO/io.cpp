@@ -55,7 +55,7 @@ Read (Mesh *mesh, std::string filename)
             ul_t nbEdges = 0;
             fichier >> nbEdges >> std::ws;
 
-            mesh->edges.reserve (nbEdges);
+            mesh->edgesbypoints.reserve (nbEdges);
 
             idx_t index_pt1, index_pt2;
             int   couleur;
@@ -64,7 +64,7 @@ Read (Mesh *mesh, std::string filename)
             {
                 fichier >> index_pt1 >> index_pt2 >> couleur >> std::ws;
 
-                mesh->InsertEdge (--index_pt1, --index_pt2);
+                mesh->InsertEdgeByPoint (--index_pt1, --index_pt2);
             }
 
             INFOS << "Read edges [" << nbEdges << "]." << ENDLINE;
@@ -122,12 +122,12 @@ Write (Mesh *mesh, std::string filename)
     INFOS << "Points written [" << mesh->points.size () << "]." << ENDLINE;
 
     out << "\nEdges" << std::endl;
-    out << mesh->edges.size () << std::endl;
+    out << mesh->edgesbypoints.size () << std::endl;
 
-    for (Edge &e : mesh->edges)
+    for (Edge &e : mesh->edgesbypoints)
         out << SPC e [0] + 1 << SPC e [1] + 1 << SPC 1 << std::endl;
 
-    INFOS << "Edges written [" << mesh->edges.size () << "]." << ENDLINE;
+    INFOS << "Edges written [" << mesh->edgesbypoints.size () << "]." << ENDLINE;
 
     out << "\n\nTriangles" << std::endl;
     out << mesh->triangles.size () << std::endl;

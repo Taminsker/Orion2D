@@ -25,8 +25,6 @@ struct Mesh
     // Points part
     //
     /////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief points
-    ///
     std::vector<Point> points;
     std::vector<LOC>   tagpoints;
 
@@ -41,8 +39,6 @@ struct Mesh
     // Cells parts
     //
     /////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief triangles
-    ///
     std::vector<Triangle> triangles;
     std::vector<real_t>   areas;
     std::vector<Point>    circumcenters;
@@ -62,10 +58,19 @@ struct Mesh
     //
     /////////////////////////////////////////////////////////////////////////////////////////////
 
-    std::vector<Edge> edges;
+    std::vector<Edge> edgesbytriangles, edgesbypoints;
 
     void
-    InsertEdge (idx_t i, idx_t j);
+    InsertEdgeByPoint (idx_t i, idx_t j);
+
+    void
+    InsertEdgeByPoint (Edge e);
+
+    void
+    InsertEdgeByTriangle (idx_t i, idx_t j);
+
+    void
+    InsertEdgeByTriangle (Edge e);
 };
 
 void
@@ -93,7 +98,49 @@ IsValid (Triangle &triangle)
 }
 
 ORION_HARD_INLINE
-real_t
+bool
+EdgeOnTriangle (Triangle &tri, Edge e)
+{
+    if (!IsValid (tri))
+        return false;
+
+    if (tri [0] == e [0] || tri [1] == e [0] || tri [2] == e [0])
+        if (tri [0] == e [1] || tri [1] == e [1] || tri [2] == e [1])
+            return true;
+
+    return false;
+}
+
+ORION_HARD_INLINE
+bool
+PointOnTriangle (Triangle &tri, idx_t id)
+{
+    if (!IsValid (tri))
+        return false;
+
+    if (tri [0] == id || tri [1] == id || tri [2] == id)
+        return true;
+
+    return false;
+}
+
+ORION_HARD_INLINE
+bool
+SharedEdge (Triangle &tri1, Triangle &tri2)
+{
+    if (EdgeOnTriangle (tri1, {tri2 [0], tri2 [1]}))
+        return true;
+
+    if (EdgeOnTriangle (tri1, {tri2 [1], tri2 [2]}))
+        return true;
+
+    if (EdgeOnTriangle (tri1, {tri2 [0], tri2 [2]}))
+        return true;
+
+    return false;
+}
+
+ORION_HARD_INLINE real_t
 Norm (const Point p)
 {
     return std::sqrt (p [0] * p [0] + p [1] * p [1]);

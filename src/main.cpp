@@ -37,6 +37,7 @@ main (int argc, char **argv)
 
     Mesh output;
     DelaunayTriangulation (&input, &output);
+    BuildEdges (&output);
     PrintStatistics (&output, "output");
 
     MakeHistogram (&output);

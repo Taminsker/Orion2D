@@ -136,51 +136,52 @@ DelaunayTriangulation (Mesh *input, Mesh *output)
     for (Point &p : input->points)
         DelaunayKernel (p, output);
 
-    INFOS << numPoints << " added                                   " << ENDLINE;
+    INFOS << "Added : " << numPoints << " points !" << ENDLINE;
 
     //    PurgeInvalids (output);
     //    INFOS << "purge invalids ! " << ENDLINE;
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Insert centers
-    //
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    //
+    //    // Insert centers
+    //    //
+    //    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool myboolean      = true;
-    ul_t count_loop     = 0;
-    ul_t count_inserted = 0;
+    //    bool myboolean      = true;
+    //    ul_t count_loop     = 0;
+    //    ul_t count_inserted = 0;
 
-    while (myboolean && count_loop < 20)
-    {
-        myboolean = false;
-        count_loop++;
+    //    while (myboolean && count_loop < 20)
+    //    {
+    //        myboolean = false;
+    //        count_loop++;
 
-        ul_t numTriangles = output->triangles.size ();
-        for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
-        {
-            if (IsValid (output->triangles [idTri]) && output->qualities [idTri] > 100)
-            {
-                /////////////////////////////////////////////////////////////////////////////////////////////
-                Point &p = output->circumcenters [idTri];
-                /////////////////////////////////////////////////////////////////////////////////////////////
+    //        ul_t numTriangles = output->triangles.size ();
+    //        for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
+    //        {
+    //            if (IsValid (output->triangles [idTri]) && output->qualities [idTri] > 100)
+    //            {
+    //                /////////////////////////////////////////////////////////////////////////////////////////////
+    //                Point &p = output->circumcenters [idTri];
+    //                /////////////////////////////////////////////////////////////////////////////////////////////
 
-                if (p [0] < minp [0] || p [0] > maxp [0] || p [1] < minp [1] || p [1] > maxp [1])
-                    continue;
+    //                if (p [0] < minp [0] || p [0] > maxp [0] || p [1] < minp [1] || p [1] > maxp [1])
+    //                    continue;
 
-                DelaunayKernel (p, output);
+    //                DelaunayKernel (p, output);
 
-                count_inserted++;
-                myboolean = true;
-            }
-        }
+    //                count_inserted++;
+    //                myboolean = true;
+    //            }
+    //        }
 
-        INFOS << "Insert centers " << count_inserted << ENDLINE;
-    }
+    //        INFOS << "Insert centers " << count_inserted << ENDLINE;
+    //    }
 
     PurgeInvalids (output);
-    INFOS << "purge invalids ! " << ENDLINE;
+    INFOS << "Purge invalids ! " << ENDLINE;
 
     STATUS << "Done !" << ENDLINE;
+
     ENDFUN;
 }
