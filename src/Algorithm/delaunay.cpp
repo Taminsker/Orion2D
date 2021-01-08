@@ -22,44 +22,71 @@ PointInCircle (Mesh *mesh, Point &p, ul_t id)
     return false;
 }
 
-// bool
-// PointInTriangle (Mesh *mesh, Point &p, ul_t id)
-// {
-//     if (!IsValid (mesh->triangles [id]))
-//         return false;
-//
-//     Triangle &tri  = mesh->triangles [id];
-//     // real_t    area = mesh->areas [id];
-//
-//     Point &pA = mesh->points [static_cast<ul_t> (tri [0])];
-//     Point &pB = mesh->points [static_cast<ul_t> (tri [1])];
-//     Point &pC = mesh->points [static_cast<ul_t> (tri [2])];
-//
-//     real_t area = 1./2. * (-pB[1] * pC[0] + pA[0] * (-pB[0] + pC[0]) + pA[0] * (pB[1] - pC[1]) + pB[0] * pC[1]);
-//     //
-//     int    sign = area < 0 ? -1 : 1;
-//     // real_t s    = (pA [1] * pC [0] - pA [0] * pC [1] + (pC [1] - pA [1]) * p [0] + (pA [0] - pC [0]) * p [1]) * sign;
-//     // real_t t    = (pA [0] * pB [1] - pA [1] * pB [0] + (pA [1] - pB [1]) * p [0] + (pB [0] - pA [0]) * p [1]) * sign;
-//     //
-//     // return s > 0 && t > 0 && (s + t) < 2 * area * sign;
-//
-//     Point u = pB - pA;
-//     Point v = p - pA;
-//     if (u[0] * v[1] - u[1] * v[0] < 0)
-//         return false;
-//
-//     u = pC - pB;
-//     v = p - pA;
-//     if (u[0] * v[1] - u[1] * v[0] < 0)
-//         return false;
-//
-//     u = pA - pC;
-//     v = p - pB;
-//     if (u[0] * v[1] - u[1] * v[0] < 0)
-//         return false;
-//
-//     return true;
-// }
+bool
+PointInTriangle (Mesh *mesh, Point &p, ul_t id)
+{
+    if (!IsValid (mesh->triangles [id]))
+        return false;
+
+    Triangle &tri  = mesh->triangles [id];
+    // real_t    area = mesh->areas [id];
+
+    Point &pA = mesh->points [static_cast<ul_t> (tri [0])];
+    Point &pB = mesh->points [static_cast<ul_t> (tri [1])];
+    Point &pC = mesh->points [static_cast<ul_t> (tri [2])];
+
+    // real_t area = 1./2. * (-pB[1] * pC[0] + pA[0] * (-pB[0] + pC[0]) + pA[0] * (pB[1] - pC[1]) + pB[0] * pC[1]);
+    //
+    // int    sign = area < 0 ? -1 : 1;
+    // real_t s    = (pA [1] * pC [0] - pA [0] * pC [1] + (pC [1] - pA [1]) * p [0] + (pA [0] - pC [0]) * p [1]) * sign;
+    // real_t t    = (pA [0] * pB [1] - pA [1] * pB [0] + (pA [1] - pB [1]) * p [0] + (pB [0] - pA [0]) * p [1]) * sign;
+    //
+    // return s > 0 && t > 0 && (s + t) < 2 * area * sign;
+
+    Point u_AB = pB - pA;
+    Point u_AP = p - pA;
+    Point u_AC = pC - pA;
+
+    double z_ABAP = u_AB [0] * u_AP [1] - u_AB [1] * u_AP [0];
+    double z_ABAC = u_AB [0] * u_AC [1] - u_AB [1] * u_AC [0];
+
+    Point u_BC = pC - pB;
+    Point u_BP = p - pB;
+
+    double z_BCBP = u_BC [0] * u_BP [1] - u_BC [1] * u_BP [0];
+    double z_BCBA = - (u_BC [0] * u_AB [1] - u_BC [1] * u_AB [0]);
+
+    Point u_CP = p - pC;
+
+    double z_CACP = - (u_AC [0] * u_CP [1] - u_AC [1] * u_CP [0]);
+    double z_CACB = u_AC [0] * u_BC [1] - u_AC [1] * u_BC [0];
+
+    if (z_ABAP * z_ABAC > 0)
+        return false;
+
+    if (z_BCBP * z_BCBA > 0)
+        return false;
+
+    if (z_CACP * z_CACB > 0)
+        return false;
+
+    // Point u = pB - pA;
+    // Point v = p - pA;
+    // if (u[0] * v[1] - u[1] * v[0] < 0)
+    //     return false;
+    //
+    // u = pC - pB;
+    // v = p - pA;
+    // if (u[0] * v[1] - u[1] * v[0] < 0)
+    //     return false;
+    //
+    // u = pA - pC;
+    // v = p - pB;
+    // if (u[0] * v[1] - u[1] * v[0] < 0)
+    //     return false;
+
+    return true;
+}
 
 void
 DelaunayKernel (Point &p, Mesh *output)
