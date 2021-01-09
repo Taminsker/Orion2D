@@ -7,6 +7,9 @@ typedef unsigned long ul_t;
 typedef int           error_t;
 typedef int           idx_t;
 
+#define SIGNED(X)  static_cast<idx_t> (X)
+#define USIGNED(X) static_cast<ul_t> (X)
+
 // values
 #define MATH_PI    3.14159265358979323846264338328
 #define MATH_SQRT3 1.732050807568877293527446341506

@@ -55,7 +55,7 @@ Read (Mesh *mesh, std::string filename)
             ul_t nbEdges = 0;
             fichier >> nbEdges >> std::ws;
 
-            mesh->edgesbypoints.reserve (nbEdges);
+            mesh->edges.reserve (nbEdges);
 
             idx_t index_pt1, index_pt2;
             int   couleur;
@@ -64,7 +64,7 @@ Read (Mesh *mesh, std::string filename)
             {
                 fichier >> index_pt1 >> index_pt2 >> couleur >> std::ws;
 
-                mesh->InsertEdgeByPoint (--index_pt1, --index_pt2);
+                mesh->InsertEdge ({--index_pt1, --index_pt2, -1, -1});
             }
 
             INFOS << "Read edges [" << nbEdges << "]." << ENDLINE;
@@ -81,6 +81,7 @@ Read (Mesh *mesh, std::string filename)
             mesh->triangles.reserve (nbTriangles);
             mesh->areas.reserve (nbTriangles);
             mesh->circumcenters.reserve (nbTriangles);
+            mesh->inradius.reserve (nbTriangles);
             mesh->masscenters.reserve (nbTriangles);
             mesh->radius.reserve (nbTriangles);
             mesh->qualities.reserve (nbTriangles);
@@ -123,12 +124,12 @@ Write (Mesh *mesh, std::string filename)
     INFOS << "Points written [" << mesh->points.size () << "]." << ENDLINE;
 
     out << "\nEdges" << std::endl;
-    out << mesh->edgesbypoints.size () << std::endl;
+    out << mesh->edges.size () << std::endl;
 
-    for (Edge &e : mesh->edgesbypoints)
+    for (Edge &e : mesh->edges)
         out << SPC e [0] + 1 << SPC e [1] + 1 << SPC 1 << std::endl;
 
-    INFOS << "Edges written [" << mesh->edgesbypoints.size () << "]." << ENDLINE;
+    INFOS << "Edges written [" << mesh->edges.size () << "]." << ENDLINE;
 
     out << "\n\nTriangles" << std::endl;
     out << mesh->triangles.size () << std::endl;
@@ -148,7 +149,6 @@ Write (Mesh *mesh, std::string filename)
     return;
 }
 
-
 void
 WriteBB (Mesh *mesh, std::string filename)
 {
@@ -157,7 +157,7 @@ WriteBB (Mesh *mesh, std::string filename)
     std::ofstream out (filename);
 
     ul_t numTriangles = mesh->triangles.size ();
-    out << "2 1 " << numTriangles << " 1 "<< std::endl;
+    out << "2 1 " << numTriangles << " 1 " << std::endl;
 
     for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
         out << SPC mesh->qualities [idTri] << std::endl;

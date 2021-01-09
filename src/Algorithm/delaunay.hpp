@@ -16,4 +16,10 @@ DelaunayKernel (Point &p, Mesh *output);
 void
 DelaunayTriangulation (Mesh *input, Mesh *output);
 
+void
+CheckDelaunayCriterion (Mesh *mesh);
+
+void
+InsertMasscenter (Mesh *input, Mesh *output, ul_t maxiter = 100);
+
 #endif  // DELAUNAY_HPP

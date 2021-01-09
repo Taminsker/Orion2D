@@ -16,7 +16,7 @@ PointInCircle (Mesh *mesh, Point &p, ul_t id)
     Point & center = mesh->circumcenters [id];
     real_t &radius = mesh->radius [id];
 
-    if (Norm (p - center) < radius)
+    if (Norm (p - center) < radius - 1E-10)
         return true;
 
     return false;
@@ -77,7 +77,8 @@ DelaunayKernel (Point &p, Mesh *output)
         if (PointInCircle (output, p, idTri))
         {
             Triangle &tri = output->triangles [idTri];
-            edges.insert (std::end (edges), {{tri [0], tri [1]}, {tri [1], tri [2]}, {tri [0], tri [2]}});
+            edges.insert (std::end (edges),
+                          {{tri [0], tri [1], -1, -1}, {tri [1], tri [2], -1, -1}, {tri [0], tri [2], -1, -1}});
 
             InvalidThis (tri);
         }
@@ -114,6 +115,7 @@ DelaunayTriangulation (Mesh *input, Mesh *output)
     output->triangles.reserve (4 * numPoints);
     output->areas.reserve (4 * numPoints);
     output->circumcenters.reserve (4 * numPoints);
+    output->inradius.reserve (4 * numPoints);
     output->masscenters.reserve (4 * numPoints);
     output->radius.reserve (4 * numPoints);
     output->qualities.reserve (4 * numPoints);
@@ -159,60 +161,114 @@ DelaunayTriangulation (Mesh *input, Mesh *output)
 
     INFOS << "Added : " << numPoints << " points !" << ENDLINE;
 
-    //    PurgeInvalids (output);
-    //    INFOS << "purge invalids ! " << ENDLINE;
+    PurgeInvalids (output);
+    INFOS << "Purge invalids ! " << ENDLINE;
 
+    STATUS << "Done !" << ENDLINE;
+
+    ENDFUN;
+}
+
+void
+CheckDelaunayCriterion (Mesh *mesh)
+{
+    BEGIN << "Check Delaunay criterion" << ENDLINE;
+
+    bool myboolean    = true;
+    ul_t numPoints    = mesh->points.size ();
+    ul_t numTriangles = mesh->triangles.size ();
+
+    for (ul_t idPoint = 0; idPoint < numPoints; ++idPoint)
+        for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
+            if (!PointOnTriangle (mesh->triangles [idTri], static_cast<idx_t> (idPoint)))
+                if (PointInCircle (mesh, mesh->points [idPoint], idTri))
+                {
+                    Point &p = mesh->points [idPoint];
+                    //                    Triangle &tri = mesh->triangles [idTri];
+
+                    //                    ERROR << "The point " << idPoint << " [" << p [0] << " " << p [1] << "] in
+                    //                    triangle " << idTri
+                    //                          << "  " << tri [0] << " " << tri [1] << " " << tri [2] << ENDLINE;
+
+                    ERROR << " criterion : [p = " << idPoint << " & tri = " << idTri
+                          << "] ||p-c|| = " << Norm (p - mesh->circumcenters [idTri]) << " r = " << mesh->radius [idTri]
+                          << " bool = " << (Norm (p - mesh->circumcenters [idTri]) < mesh->radius [idTri]) << ENDLINE;
+                    myboolean = false;
+                }
+
+    if (myboolean)
+        INFOS << "Everything is good ! " << ENDLINE;
+    else
+        ERROR << "An error occures..." << ENDLINE;
+
+    STATUS << "Done !" << ENDLINE;
+    ENDFUN;
+
+    return;
+}
+
+void
+InsertMasscenter (Mesh *input, Mesh *output, ul_t maxiter)
+{
     //    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //    //
-    //    // Insert centers
+    //    // Insert masscenters
     //    //
     //    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //    bool myboolean      = true;
-    //    ul_t count_loop     = 0;
-    //    ul_t count_inserted = 0;
+    real_t distmax = Norm (input->points [static_cast<ul_t> (input->edges [0][0])] -
+                           input->points [static_cast<ul_t> (input->edges [0][1])]);
 
-    //    while (myboolean && count_loop < 3)
-    //    {
-    //        myboolean = false;
-    //        count_loop++;
+    for (Edge &e : input->edges)
+        distmax = std::max (
+            distmax, Norm (input->points [static_cast<ul_t> (e [0])] - input->points [static_cast<ul_t> (e [1])]));
 
-    //        ul_t numTriangles = output->triangles.size ();
-    //        for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
-    //        {
-    //            if (IsValid (output->triangles [idTri]) && output->qualities [idTri] > 1.5 && output->areas [idTri] >
-    //            1e-8)
-    //            {
-    //                /////////////////////////////////////////////////////////////////////////////////////////////
-    //                Point &p = output->masscenters [idTri];
-    //                /////////////////////////////////////////////////////////////////////////////////////////////
+    bool myboolean      = true;
+    ul_t count_loop     = 0;
+    ul_t count_inserted = 0;
 
-    //                if (p [0] < minp [0] || p [0] > maxp [0] || p [1] < minp [1] || p [1] > maxp [1])
-    //                    continue;
-    //                //
-    //                // if (!PointInTriangle (output, p, idTri))
-    //                // {
-    //                //     ERROR << "You try to add the point " << p[0] << " " << p[1] << " in triangle " << idTri <<
-    //                ". But
-    //                //     failed." << ENDLINE; ERROR << output->points[output->triangles[idTri][0]][0] << " " <<
-    //                //     output->points[output->triangles[idTri][0]][1] << ENDLINE; ERROR <<
-    //                //     output->points[output->triangles[idTri][1]][0] << " " <<
-    //                //     output->points[output->triangles[idTri][1]][1] << ENDLINE; ERROR <<
-    //                //     output->points[output->triangles[idTri][2]][0] << " " <<
-    //                //     output->points[output->triangles[idTri][2]][1] << ENDLINE;
-    //                //
-    //                //     ENDFUN;
-    //                //     continue;
-    //                // }
+    while (myboolean && count_loop < maxiter)
+    {
+        myboolean = false;
+        count_loop++;
 
-    //                //                DelaunayKernel (p, output);
+        ul_t numTriangles = output->triangles.size ();
+        for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
+        {
+            if (IsValid (output->triangles [idTri]) && output->areas [idTri] > (distmax * distmax / 1.5) &&
+                output->inradius [idTri] > 0.1 * distmax)
+            {
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                Point &p = output->circumcenters [idTri];
+                /////////////////////////////////////////////////////////////////////////////////////////////
 
-    //                count_inserted++;
-    //                myboolean = true;
-    //            }
-    //        }
-    //        INFOS << "Insert centers " << count_inserted << " [in loop " << count_loop << "]" << ENDLINE;
-    //}
+                //                if (p [0] < minp [0] || p [0] > maxp [0] || p [1] < minp [1] || p [1] > maxp [1])
+                //                continue;
+                //
+                // if (!PointInTriangle (output, p, idTri))
+                // {
+                //     ERROR << "You try to add the point " << p[0] << " " << p[1] << " in triangle " << idTri <<
+                //                ". But
+                //     failed." << ENDLINE; ERROR << output->points[output->triangles[idTri][0]][0] << " " <<
+                //     output->points[output->triangles[idTri][0]][1] << ENDLINE; ERROR <<
+                //     output->points[output->triangles[idTri][1]][0] << " " <<
+                //     output->points[output->triangles[idTri][1]][1] << ENDLINE; ERROR <<
+                //     output->points[output->triangles[idTri][2]][0] << " " <<
+                //     output->points[output->triangles[idTri][2]][1] << ENDLINE;
+                //
+                //     ENDFUN;
+                //     continue;
+                // }
+
+                DelaunayKernel (p, output);
+
+                count_inserted++;
+                myboolean = true;
+            }
+        }
+
+        INFOS << "Insert masscenters " << count_inserted << " [in loop " << count_loop << "]" << ENDLINE;
+    }
 
     PurgeInvalids (output);
     INFOS << "Purge invalids ! " << ENDLINE;

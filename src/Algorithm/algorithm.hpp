@@ -4,5 +4,6 @@
 #include "boundary.hpp"
 #include "delaunay.hpp"
 #include "quality.hpp"
+#include "voronoi.hpp"
 
 #endif  // ALGORITHM_HPP

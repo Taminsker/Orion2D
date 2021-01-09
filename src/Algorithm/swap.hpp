@@ -1,10 +1,12 @@
 #ifndef SWAP_HPP
 #define SWAP_HPP
 
-#include "core.hpp"
+#include <utility>
 
-void SwapEdge (Triangle & tri1, Triangle & tri2);
+#include "../Core/core.hpp"
 
-bool ElementInList (int number, std::vector<int> & list);
+// void SwapEdge (Triangle & tri1, Triangle & tri2);
 
-#endif // SWAP_HPP
+// bool ElementInList (int number, std::vector<int> & list);
+
+#endif  // SWAP_HPP

@@ -1,10 +1,12 @@
-#include "core.hpp"
+#include "mesh.hpp"
 
 #include <algorithm>
 #include <functional>
 #include <iomanip>
 #include <iostream>
 #include <map>
+
+#include "core.hpp"
 
 Point &
 Mesh::InsertPoint (Point &point)
@@ -35,6 +37,7 @@ Mesh::InsertTriangle (idx_t i, idx_t j, idx_t k)
 
     areas.push_back (0);
     circumcenters.push_back (circumcenter);
+    inradius.push_back (0);
     masscenters.push_back (masscenter);
     radius.push_back (0);
     qualities.push_back (0);
@@ -70,7 +73,7 @@ Mesh::UpdateTriangle (ul_t id)
     // Aire du triangle ABC (maille K)
     //
     /////////////////////////////////////////////////////////////////////////////////////////////
-    areas [id] = 0.5 * std::fabs (det);
+    areas [id] = ComputeArea (pA, pB, pC);
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -105,53 +108,44 @@ Mesh::UpdateTriangle (ul_t id)
     masscenters [id][0] = (pA [0] + pB [0] + pC [0]) / 3.;
     masscenters [id][1] = (pA [1] + pB [1] + pC [1]) / 3.;
 
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Inradius
+    //
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    inradius [id] = 2.0 * areas [id] / (dAB + dAC + dBC);
+
     return;
 }
 
 void
-Mesh::InsertEdgeByTriangle (idx_t i, idx_t j)
+Mesh::InsertEdge (idx_t idtri1, idx_t idtri2)
 {
-    Edge ne;
-    ne [0] = std::min (i, j);
-    ne [1] = i + j - ne [0];
+    Triangle &tri1 = triangles [USIGNED (idtri1)];
+    Triangle &tri2 = triangles [USIGNED (idtri2)];
 
-    edgesbytriangles.push_back (ne);
+    Edge ne;
+    SharedEdge (tri1, tri2, &ne);
+
+    ne [2] = std::min (idtri1, idtri2);
+    ne [3] = idtri1 + idtri2 - ne [2];
+
+    edges.push_back (ne);
 
     return;
 }
 
 void
-Mesh::InsertEdgeByTriangle (Edge e)
-{
-    Edge ne;
-    ne [0] = std::min (e [0], e [1]);
-    ne [1] = e [0] + e [1] - ne [0];
-
-    edgesbytriangles.push_back (ne);
-
-    return;
-}
-
-void
-Mesh::InsertEdgeByPoint (idx_t i, idx_t j)
-{
-    Edge ne;
-    ne [0] = std::min (i, j);
-    ne [1] = i + j - ne [0];
-
-    edgesbypoints.push_back (ne);
-
-    return;
-}
-
-void
-Mesh::InsertEdgeByPoint (Edge e)
+Mesh::InsertEdge (Edge e)
 {
     Edge ne;
     ne [0] = std::min (e [0], e [1]);
     ne [1] = e [0] + e [1] - ne [0];
 
-    edgesbypoints.push_back (ne);
+    ne [2] = std::min (e [2], e [3]);
+    ne [3] = e [2] + e [3] - ne [2];
+
+    edges.push_back (ne);
 
     return;
 }
@@ -186,13 +180,43 @@ PurgeInvalids (Mesh *mesh)
 }
 
 void
+EraseBox (Mesh *mesh)
+{
+    ul_t numTriangles = mesh->triangles.size ();
+
+    for (idx_t idPoint = 0; idPoint < 4; ++idPoint)
+        for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
+            if (PointOnTriangle (mesh->triangles [idTri], idPoint))
+                InvalidThis (mesh->triangles [idTri]);
+
+    for (Triangle &tri : mesh->triangles)
+    {
+        tri [0] -= 4;
+        tri [1] -= 4;
+        tri [2] -= 4;
+    }
+
+    PurgeInvalids (mesh);
+
+    mesh->edges.clear ();
+
+    ul_t numPoints = mesh->points.size ();
+
+    for (ul_t id = 4; id < numPoints; ++id)
+        mesh->points [id - 4] = mesh->points [id];
+
+    mesh->points.resize (numPoints - 4);
+
+    return;
+}
+
+void
 PrintStatistics (Mesh *mesh, const char *name)
 {
     BEGIN << "Mesh stats " << name << ENDLINE;
-    INFOS << " Number of points                     : " << mesh->points.size () << ENDLINE;
-    INFOS << " Number of edges [point-connections]  : " << mesh->edgesbypoints.size () << ENDLINE;
-    INFOS << " Number of edges [cell-connections]   : " << mesh->edgesbytriangles.size () << ENDLINE;
-    INFOS << " Number of triangles                  : " << mesh->triangles.size () << ENDLINE;
+    INFOS << " Number of points     : " << mesh->points.size () << ENDLINE;
+    INFOS << " Number of edges      : " << mesh->edges.size () << ENDLINE;
+    INFOS << " Number of triangles  : " << mesh->triangles.size () << ENDLINE;
 
     ENDFUN;
     return;
@@ -202,6 +226,7 @@ void
 BuildEdges (Mesh *mesh)
 {
     BEGIN << "Build edges " << ENDLINE;
+    mesh->edges.clear ();
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     // Definitions
@@ -210,7 +235,7 @@ BuildEdges (Mesh *mesh)
     // The object in the hash map
     struct hash_t
     {
-        idx_t data = -1;
+        Edge data = {-1, -1, -1, -1};
     };
 
     // the type of the key
@@ -225,9 +250,7 @@ BuildEdges (Mesh *mesh)
     // sum_{k=0} ^{nbrPoint_cell} b^k * cell[k]
     // i + numPoints * j
 
-    auto hashFun = [numPoints] (idx_t i, idx_t j) -> key_t {
-        return static_cast<key_t> (i) + static_cast<key_t> (numPoints) * static_cast<key_t> (j);
-    };
+    auto hashFun = [numPoints] (idx_t i, idx_t j) -> key_t { return USIGNED (i) + USIGNED (numPoints) * USIGNED (j); };
 
     // list identities
     const std::vector<std::array<ul_t, 2>> listIdx = {{0, 1}, {1, 2}, {0, 2}};
@@ -253,15 +276,23 @@ BuildEdges (Mesh *mesh)
         {
             hash_t &obj = theMap [hashFun (tri [couple [0]], tri [couple [1]])];
 
-            if (obj.data == -1)
-                obj.data = static_cast<idx_t> (idTri);
+            if (obj.data [2] == -1)
+            {
+                obj.data [0] = tri [couple [0]];
+                obj.data [1] = tri [couple [1]];
+
+                obj.data [2] = SIGNED (idTri);
+            }
             else
-                mesh->InsertEdgeByTriangle (obj.data, static_cast<idx_t> (idTri));
+                obj.data [3] = SIGNED (idTri);
         }
     }
 
-    INFOS << "Hash map size : " << theMap.size () << ENDLINE;
-    INFOS << "Edges with triangle id : " << mesh->edgesbytriangles.size () << ENDLINE;
+    for (auto e : theMap)
+        mesh->InsertEdge (e.second.data);
+
+    INFOS << "Hash map size   : " << theMap.size () << ENDLINE;
+    INFOS << "Number of edges : " << mesh->edges.size () << ENDLINE;
 
     //    /////////////////////////////////////////////////////////////////////////////////////////////
     //    // Put the new edges by triangles
@@ -272,30 +303,30 @@ BuildEdges (Mesh *mesh)
     //    for (std::pair<key_t, hash_t> obj : theMap)
     //        mesh->InsertEdgeByTriangle (obj.second.data);
 
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    // Put the new edges by points
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    mesh->edgesbypoints.clear ();
-    mesh->edgesbypoints.reserve (theMap.size ());
+    //    /////////////////////////////////////////////////////////////////////////////////////////////
+    //    // Put the new edges by points
+    //    /////////////////////////////////////////////////////////////////////////////////////////////
+    //    mesh->edges.clear ();
+    //    mesh->edgesbypoints.reserve (theMap.size ());
 
-    for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
-    {
-        Triangle &tri = mesh->triangles [idTri];
+    //    for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
+    //    {
+    //        Triangle &tri = mesh->triangles [idTri];
 
-        if (!IsValid (tri))
-            continue;
+    //        if (!IsValid (tri))
+    //            continue;
 
-        mesh->InsertEdgeByPoint (tri [0], tri [1]);
-        mesh->InsertEdgeByPoint (tri [1], tri [2]);
-        mesh->InsertEdgeByPoint (tri [0], tri [2]);
-    }
+    //        mesh->InsertEdgeByPoint (tri [0], tri [1]);
+    //        mesh->InsertEdgeByPoint (tri [1], tri [2]);
+    //        mesh->InsertEdgeByPoint (tri [0], tri [2]);
+    //    }
 
-    std::sort (std::begin (mesh->edgesbypoints), std::end (mesh->edgesbypoints));
+    //    std::sort (std::begin (mesh->edgesbypoints), std::end (mesh->edgesbypoints));
 
-    mesh->edgesbypoints.erase (std::unique (std::begin (mesh->edgesbypoints), std::end (mesh->edgesbypoints)),
-                               std::end (mesh->edgesbypoints));
+    //    mesh->edgesbypoints.erase (std::unique (std::begin (mesh->edgesbypoints), std::end (mesh->edgesbypoints)),
+    //                               std::end (mesh->edgesbypoints));
 
-    INFOS << "Edges with point id : " << mesh->edgesbypoints.size () << ENDLINE;
+    //    INFOS << "Edges with point id : " << mesh->edgesbypoints.size () << ENDLINE;
 
     STATUS << "Done !" << ENDLINE;
     ENDFUN;

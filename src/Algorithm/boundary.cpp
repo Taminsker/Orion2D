@@ -7,13 +7,14 @@
 
 #include "../Core/core.hpp"
 #include "../orionglobal.hpp"
+#include "swap.hpp"
 
 void
 ForceBoundaries (Mesh *input, Mesh *output)
 {
     BEGIN << "Force boundaries" << ENDLINE;
 
-    INFOS << "Number of targets edges : " << input->edgesbypoints.size () << ENDLINE;
+    INFOS << "Number of targets edges : " << input->edges.size () << ENDLINE;
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -29,14 +30,12 @@ ForceBoundaries (Mesh *input, Mesh *output)
     ul_t numPoints    = output->points.size ();
     ul_t numTriangles = output->triangles.size ();
 
-    auto hashFun = [numPoints] (idx_t i, idx_t j) -> key_t {
-        return static_cast<key_t> (i) + static_cast<key_t> (numPoints) * static_cast<key_t> (j);
-    };
+    auto hashFun = [numPoints] (idx_t i, idx_t j) -> key_t { return USIGNED (i) + numPoints * USIGNED (j); };
 
     map_t theMap;
 
     idx_t index = 0;
-    for (Edge &e : output->edgesbypoints)
+    for (Edge &e : output->edges)
         theMap.insert ({hashFun (e [0], e [1]), {index++}});
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,18 +44,25 @@ ForceBoundaries (Mesh *input, Mesh *output)
     ///
     ////////////////////////////////////////////////////////////////////////////////////////////
 
+    bool enable = false;
+    if (std::abs (output->points [0][1] - output->points [1][1]) > 1e-6)
+        enable = true;
+
     ul_t countSwap = 0;
-    for (Edge &e : input->edgesbypoints)
+    for (Edge e : input->edges)
     {
-        e [0] += 4;
-        e [1] += 4;
+        if (enable)
+        {
+            e [0] += 4;
+            e [1] += 4;
+        }
 
         if (theMap.find (hashFun (e [0], e [1])) != theMap.end ())
             continue;
 
         std::vector<ul_t> listE0, listE1;
-        Edge              edge;
         bool              found = false;
+        Edge              edge  = {-1, -1, -1, -1};
 
         for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
         {
@@ -70,11 +76,11 @@ ForceBoundaries (Mesh *input, Mesh *output)
 
             if (PointOnTriangle (tri, e [0]))
             {
-                for (ul_t id : listE0)
-                    if (SharedEdge (output->triangles [id], tri))
+                for (ul_t id : listE1)
+                    if (SharedEdge (output->triangles [id], tri, &edge))
                     {
-                        edge [0] = static_cast<idx_t> (id);
-                        edge [1] = static_cast<idx_t> (idTri);
+                        edge [2] = std::min (SIGNED (id), SIGNED (idTri));
+                        edge [3] = SIGNED (id) + SIGNED (idTri) - edge [2];
 
                         found = true;
                         break;
@@ -88,17 +94,17 @@ ForceBoundaries (Mesh *input, Mesh *output)
 
             ////////////////////////////////////////////////////////////////////////////////////////////
             //
-            // List triangles which have the point e[0]
+            // List triangles which have the point e[1]
             //
             ////////////////////////////////////////////////////////////////////////////////////////////
 
             if (PointOnTriangle (tri, e [1]))
             {
-                for (ul_t id : listE1)
-                    if (SharedEdge (output->triangles [id], tri))
+                for (ul_t id : listE0)
+                    if (SharedEdge (output->triangles [id], tri, &edge))
                     {
-                        edge [0] = static_cast<idx_t> (id);
-                        edge [1] = static_cast<idx_t> (idTri);
+                        edge [2] = std::min (SIGNED (id), SIGNED (idTri));
+                        edge [3] = SIGNED (id) + SIGNED (idTri) - edge [2];
 
                         found = true;
                         break;
@@ -111,12 +117,35 @@ ForceBoundaries (Mesh *input, Mesh *output)
             }
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        //
+        // Swap
+        //
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        Triangle &tri1 = output->triangles [static_cast<ul_t> (edge [2])];
+        Triangle &tri2 = output->triangles [static_cast<ul_t> (edge [3])];
+
+        ERROR << found << " " << edge [0] << " " << edge [1] << " " << edge [2] << " " << edge [3] << " " << ENDLINE;
+
+        output->InsertTriangle (edge [0], edge [1], tri1 [0] + tri1 [1] + tri1 [2] - edge [0] - edge [1]);
+        output->InsertTriangle (edge [0], edge [1], tri2 [0] + tri2 [1] + tri2 [2] - edge [0] - edge [1]);
+
+        InvalidThis (tri1);
+        InvalidThis (tri2);
+
         countSwap++;
     }
 
-    INFOS << "Number of edge swap : " << countSwap << ENDLINE;
-    STATUS << "Done !" << ENDLINE;
+    if (countSwap == 0)
+        WARNING << "No swaps needed !" << ENDLINE;
+    else
+        STATUS << "Count swaps  : " << countSwap << ENDLINE;
 
+    STATUS << "Done !" << ENDLINE;
     ENDFUN;
+
+    PurgeInvalids (output);
+    BuildEdges (output);
+
     return;
 }
