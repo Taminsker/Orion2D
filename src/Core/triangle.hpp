@@ -27,7 +27,7 @@ IsValid (Triangle &triangle)
 
 ORION_HARD_INLINE
 bool
-EdgeOnTriangle (Triangle &tri, Edge e)
+EdgeBelongsTriangle (Triangle &tri, Edge e)
 {
     if (!IsValid (tri))
         return false;
@@ -41,7 +41,7 @@ EdgeOnTriangle (Triangle &tri, Edge e)
 
 ORION_HARD_INLINE
 bool
-PointOnTriangle (Triangle &tri, idx_t id)
+PointBelongsTriangle (Triangle &tri, idx_t id)
 {
     if (!IsValid (tri))
         return false;
@@ -57,15 +57,15 @@ bool
 SharedEdge (Triangle &tri1, Triangle &tri2, Edge *shared)
 {
     *shared = {tri2 [0], tri2 [1], -1, -1};
-    if (EdgeOnTriangle (tri1, *shared))
+    if (EdgeBelongsTriangle (tri1, *shared))
         return true;
 
     *shared = {tri2 [1], tri2 [2], -1, -1};
-    if (EdgeOnTriangle (tri1, *shared))
+    if (EdgeBelongsTriangle (tri1, *shared))
         return true;
 
     *shared = {tri2 [0], tri2 [2], -1, -1};
-    if (EdgeOnTriangle (tri1, *shared))
+    if (EdgeBelongsTriangle (tri1, *shared))
         return true;
 
     *shared = {-1, -1, -1, -1};
@@ -91,6 +91,29 @@ ComputeArea (Point &pA, Point &pB, Point &pC)
     real_t det = u_AB [0] * u_AC [1] - u_AB [1] * u_AC [0];
 
     return 0.5 * std::fabs (det);
+}
+
+ORION_HARD_INLINE
+void
+CircumCenter (Point &pA, Point &pB, Point &pC, Point &circumcenter)
+{
+    Point u_AB = pB - pA;
+    Point u_AC = pC - pA;
+
+    real_t det = u_AB [0] * u_AC [1] - u_AB [1] * u_AC [0];
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Circumcenter
+    //
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    real_t f = u_AB [0] * ((pA [0] + pB [0]) / 2.) + u_AB [1] * ((pA [1] + pB [1]) / 2.);
+    real_t g = u_AC [0] * ((pA [0] + pC [0]) / 2.) + u_AC [1] * ((pA [1] + pC [1]) / 2.);
+
+    circumcenter [0] = (u_AC [1] * f - u_AB [1] * g) / det;
+    circumcenter [1] = (u_AB [0] * g - u_AC [0] * f) / det;
+
+    return;
 }
 
 #endif  // TRIANGLE_HPP

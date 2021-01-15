@@ -1,29 +1,77 @@
 
+#include <chrono>
+
 #include "Algorithm/algorithm.hpp"
 #include "Core/core.hpp"
 #include "IO/io.hpp"
 #include "orionglobal.hpp"
 
+static std::string filename    = "";
+static error_t     error       = EXIT_SUCCESS;
+static bool        use_voronoi = false;
+static bool        use_mass    = false;
+static bool        use_check   = false;
+static bool        use_force   = false;
+
+static char message [] =
+    "[OPTIONS]       -v, --voronoi    : equilibrate diagram of Voronoï\n"
+    "                -m, --mass       : insert masscenters\n"
+    "                -c, --check      : check delaunay criterion\n"
+    "                -f, --force      : force boundaries and erase the box";
+
 error_t
-main (int argc, char **argv)
+ParseArguments (int argc, char const **argv)
 {
     if (argc < 2)
     {
-        ERROR << "Use : " << argv [0] << " filename.mesh" << ENDLINE;
+        ERROR << "use " << argv [0] << " [OPTIONS] filename.mesh  " << ENDLINE;
+        std::cerr << message << std::endl;
+
         return EXIT_FAILURE;
     }
+
+    filename = std::string (argv [argc - 1]);
+
+    for (ul_t id = 1; id < USIGNED (argc) - 1; ++id)
+    {
+        std::string temp = argv [id];
+
+        if (temp == "-v" || temp == "--voronoi")
+            use_voronoi = true;
+        else if (temp == "-m" || temp == "--mass")
+            use_mass = true;
+        else if (temp == "-c" || temp == "--check")
+            use_check = true;
+        else if (temp == "-f" || temp == "--force")
+            use_force = true;
+        else
+        {
+            ERROR << "unknown parameter " << temp << ENDLINE;
+            std::cerr << message << std::endl;
+            return EXIT_FAILURE;
+        }
+    }
+
+    return EXIT_SUCCESS;
+}
+
+error_t
+main (int argc, const char **argv)
+{
+    error = ParseArguments (argc, argv);
+    USE_ERROR (error)
 
     std::cout << COLOR_YELLOW << std::string (50, '-') << ENDLINE;
     std::cout << COLOR_YELLOW << REVERSE << " Welcome in Orion2D !" << ENDLINE;
     std::cout << COLOR_YELLOW << std::string (50, '-') << ENDLINE;
+
+    std::chrono::steady_clock::time_point begin_time = std::chrono::steady_clock::now ();
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     //
     // INPUT
     //
     /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    std::string filename = argv [1];
 
     Mesh input;
     Read (&input, filename);
@@ -37,17 +85,11 @@ main (int argc, char **argv)
 
     Mesh output;
     DelaunayTriangulation (&input, &output);
-    EraseBox (&output);
-    CheckDelaunayCriterion (&output);
-    BuildEdges (&output);
-    PrintStatistics (&output, "output");
 
-    MakeHistogram (&output);
+    if (use_check)
+        CheckDelaunayCriterion (&output);
 
-    InsertMasscenter (&input, &output, 30);
     BuildEdges (&output);
-    PrintStatistics (&output, "output");
-    MakeHistogram (&output);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -55,21 +97,33 @@ main (int argc, char **argv)
     //
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //    ForceBoundaries (&input, &output);
-    //    EquilibrateByVoronoi (&output, input.points.size ());
-    CheckDelaunayCriterion (&output);
-    MakeHistogram (&output);
+    if (use_force)
+    {
+        ForceBoundaries (&input, &output);
+        MakeHistogram (&output);
+    }
 
-    //    ul_t numPoints    = output.points.size ();
-    //    ul_t numTriangles = output.triangles.size ();
+    if (use_mass)
+    {
+        InsertMasscenter (&input, &output, 500);
 
-    //    for (idx_t idPoint = 0; idPoint < 4; ++idPoint)
-    //        for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
-    //            if (PointOnTriangle (output.triangles [idTri], idPoint))
-    //                InvalidThis (output.triangles [idTri]);
+        if (use_check)
+            CheckDelaunayCriterion (&output);
 
-    //    PurgeInvalids (&output);
-    //    BuildEdges (&output);
+        MakeHistogram (&output);
+    }
+
+    if (use_voronoi)
+    {
+        EquilibrateByVoronoiCentroids (&output, input.points.size ());
+
+        if (use_check)
+            CheckDelaunayCriterion (&output);
+
+        MakeHistogram (&output);
+    }
+
+    PrintStatistics (&output, "output");
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -83,6 +137,14 @@ main (int argc, char **argv)
 
     Write (&output, filename + "_orion.mesh");
     WriteBB (&output, filename + "_orion.bb");
+
+    std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now ();
+
+    std::cout << "**********************************************************" << std::endl;
+
+    INFOS << "Time difference = "
+          << std::chrono::duration_cast<std::chrono::milliseconds> (end_time - begin_time).count () << " [ms]"
+          << ENDLINE;
 
     return EXIT_SUCCESS;
 }

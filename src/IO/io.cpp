@@ -19,7 +19,8 @@ Read (Mesh *mesh, std::string filename)
 
     BEGIN << "Read the file " << filename << ENDLINE;
 
-    std::string mot = "";
+    std::string mot       = "";
+    ul_t        dimension = 3;
 
     // Lecture du fichier tant qu'on n'est pas arrivé à la fin
     while (!fichier.eof ())
@@ -27,7 +28,12 @@ Read (Mesh *mesh, std::string filename)
         // On lit un mot
         fichier >> mot >> std::ws;  // ws = pour ne pas lire les espaces
 
-        if (mot == "Vertices")
+        if (mot == "Dimension")
+        {
+            fichier >> dimension >> std::ws;
+            INFOS << "Read dimension [" << dimension << "]." << ENDLINE;
+        }
+        else if (mot == "Vertices")
         {
             ul_t nbPoints = 0;
             fichier >> nbPoints >> std::ws;
@@ -38,12 +44,20 @@ Read (Mesh *mesh, std::string filename)
             int    couleur;
             real_t trash;
 
-            for (ul_t k = 0; k < nbPoints; ++k)
-            {
-                fichier >> newPoint [0] >> newPoint [1] >> trash >> couleur >> std::ws;
+            if (dimension == 2)
+                for (ul_t k = 0; k < nbPoints; ++k)
+                {
+                    fichier >> newPoint [0] >> newPoint [1] >> couleur >> std::ws;
 
-                mesh->InsertPoint (newPoint);
-            }
+                    mesh->InsertPoint (newPoint);
+                }
+            else
+                for (ul_t k = 0; k < nbPoints; ++k)
+                {
+                    fichier >> newPoint [0] >> newPoint [1] >> trash >> couleur >> std::ws;
+
+                    mesh->InsertPoint (newPoint);
+                }
 
             INFOS << "Read points [" << nbPoints << "]." << ENDLINE;
 
@@ -82,6 +96,7 @@ Read (Mesh *mesh, std::string filename)
             mesh->areas.reserve (nbTriangles);
             mesh->circumcenters.reserve (nbTriangles);
             mesh->inradius.reserve (nbTriangles);
+            mesh->maxlength.reserve (nbTriangles);
             mesh->masscenters.reserve (nbTriangles);
             mesh->radius.reserve (nbTriangles);
             mesh->qualities.reserve (nbTriangles);

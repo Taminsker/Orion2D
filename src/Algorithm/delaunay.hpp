@@ -5,12 +5,12 @@
 
 // Pour savoir si le point p est dans le cercle circonscrit à la cellule edge
 bool
-PointInCircle (Mesh *mesh, Point &p, ul_t id);
+PointInCircTri (Mesh *mesh, Point &p, ul_t id);
 
-// bool
-// PointInTriangle (Mesh *mesh, Point &p, ul_t id);
+bool
+PointInTriangle (Mesh *mesh, Point &p, ul_t id);
 
-void
+ul_t
 DelaunayKernel (Point &p, Mesh *output);
 
 void

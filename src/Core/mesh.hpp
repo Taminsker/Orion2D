@@ -36,6 +36,7 @@ struct Mesh
     std::vector<real_t>   areas;
     std::vector<Point>    circumcenters;
     std::vector<real_t>   inradius;
+    std::vector<real_t>   maxlength;
     std::vector<Point>    masscenters;
     std::vector<real_t>   radius;
     std::vector<real_t>   qualities;

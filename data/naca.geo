@@ -1,5 +1,5 @@
 
-hf = 1e-2;
+hf = 1e-3;
 hg = 1e0;
 
 // Point 1
@@ -37,23 +37,7 @@ Line(3) = {9, 10};
 Line(4) = {10, 11};
 Line(5) = {11, 8};
 
+Physical Curve(1) = {1, 2, 3, 5, 4};
+
 Mesh 1;
 
-Curve Loop(1) = {3, 4, 5, 2};
-
-//+
-Physical Curve(1) = {1};
-//+
-Physical Curve(2) = {5, 2, 3, 4};
-//+
-Delete {
-  Point{7}; Point{6}; Point{2}; Point{4}; Point{5}; Point{3}; 
-}
-//+
-Recursive Delete {
-  Point{7}; 
-}
-//+
-Recursive Delete {
-  Point{7}; 
-}

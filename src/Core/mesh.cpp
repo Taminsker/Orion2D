@@ -38,6 +38,7 @@ Mesh::InsertTriangle (idx_t i, idx_t j, idx_t k)
     areas.push_back (0);
     circumcenters.push_back (circumcenter);
     inradius.push_back (0);
+    maxlength.push_back (0);
     masscenters.push_back (masscenter);
     radius.push_back (0);
     qualities.push_back (0);
@@ -64,8 +65,6 @@ Mesh::UpdateTriangle (ul_t id)
 
     real_t sum = dAB * dAB + dAC * dAC + dBC * dBC;
 
-    real_t det = u_AB [0] * u_AC [1] - u_AB [1] * u_AC [0];
-
     /////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Aire du triangle ABC = 0.5 * ||AB^AC|| = 0.5 * ||[0, 0, z_ABC]||
@@ -80,11 +79,7 @@ Mesh::UpdateTriangle (ul_t id)
     // Circumcenter
     //
     /////////////////////////////////////////////////////////////////////////////////////////////
-    real_t f = u_AB [0] * ((pA [0] + pB [0]) / 2.) + u_AB [1] * ((pA [1] + pB [1]) / 2.);
-    real_t g = u_AC [0] * ((pA [0] + pC [0]) / 2.) + u_AC [1] * ((pA [1] + pC [1]) / 2.);
-
-    circumcenters [id][0] = (u_AC [1] * f - u_AB [1] * g) / det;
-    circumcenters [id][1] = (u_AB [0] * g - u_AC [0] * f) / det;
+    CircumCenter (pA, pB, pC, circumcenters [id]);
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -114,6 +109,13 @@ Mesh::UpdateTriangle (ul_t id)
     //
     /////////////////////////////////////////////////////////////////////////////////////////////
     inradius [id] = 2.0 * areas [id] / (dAB + dAC + dBC);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Perimeters
+    //
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    maxlength [id] = dAB + dAC + dBC;
 
     return;
 }
@@ -186,7 +188,7 @@ EraseBox (Mesh *mesh)
 
     for (idx_t idPoint = 0; idPoint < 4; ++idPoint)
         for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
-            if (PointOnTriangle (mesh->triangles [idTri], idPoint))
+            if (PointBelongsTriangle (mesh->triangles [idTri], idPoint))
                 InvalidThis (mesh->triangles [idTri]);
 
     for (Triangle &tri : mesh->triangles)
@@ -225,7 +227,7 @@ PrintStatistics (Mesh *mesh, const char *name)
 void
 BuildEdges (Mesh *mesh)
 {
-    BEGIN << "Build edges " << ENDLINE;
+    //    BEGIN << "Build edges " << ENDLINE;
     mesh->edges.clear ();
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -291,45 +293,11 @@ BuildEdges (Mesh *mesh)
     for (auto e : theMap)
         mesh->InsertEdge (e.second.data);
 
-    INFOS << "Hash map size   : " << theMap.size () << ENDLINE;
-    INFOS << "Number of edges : " << mesh->edges.size () << ENDLINE;
+    //    INFOS << "Hash map size   : " << theMap.size () << ENDLINE;
+    //    INFOS << "Number of edges : " << mesh->edges.size () << ENDLINE;
 
-    //    /////////////////////////////////////////////////////////////////////////////////////////////
-    //    // Put the new edges by triangles
-    //    /////////////////////////////////////////////////////////////////////////////////////////////
-    //    mesh->edgesbytriangles.clear ();
-    //    mesh->edgesbytriangles.reserve (theMap.size ());
-
-    //    for (std::pair<key_t, hash_t> obj : theMap)
-    //        mesh->InsertEdgeByTriangle (obj.second.data);
-
-    //    /////////////////////////////////////////////////////////////////////////////////////////////
-    //    // Put the new edges by points
-    //    /////////////////////////////////////////////////////////////////////////////////////////////
-    //    mesh->edges.clear ();
-    //    mesh->edgesbypoints.reserve (theMap.size ());
-
-    //    for (ul_t idTri = 0; idTri < numTriangles; ++idTri)
-    //    {
-    //        Triangle &tri = mesh->triangles [idTri];
-
-    //        if (!IsValid (tri))
-    //            continue;
-
-    //        mesh->InsertEdgeByPoint (tri [0], tri [1]);
-    //        mesh->InsertEdgeByPoint (tri [1], tri [2]);
-    //        mesh->InsertEdgeByPoint (tri [0], tri [2]);
-    //    }
-
-    //    std::sort (std::begin (mesh->edgesbypoints), std::end (mesh->edgesbypoints));
-
-    //    mesh->edgesbypoints.erase (std::unique (std::begin (mesh->edgesbypoints), std::end (mesh->edgesbypoints)),
-    //                               std::end (mesh->edgesbypoints));
-
-    //    INFOS << "Edges with point id : " << mesh->edgesbypoints.size () << ENDLINE;
-
-    STATUS << "Done !" << ENDLINE;
-    ENDFUN;
+    //    STATUS << "Done !" << ENDLINE;
+    //    ENDFUN;
 
     return;
 }

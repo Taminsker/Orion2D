@@ -53,6 +53,7 @@ MakeHistogram (Mesh *mesh)
 
     moy /= static_cast<real_t> (v.size ());
 
+    INFOS << "count      : " << SPC v.size () << ENDLINE;
     INFOS << "minimum    : " << SPC min << ENDLINE;
     INFOS << "maximum    : " << SPC max << ENDLINE;
     INFOS << "mean       : " << SPC moy << ENDLINE;
