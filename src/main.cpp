@@ -10,12 +10,14 @@ static std::string filename    = "";
 static error_t     error       = EXIT_SUCCESS;
 static bool        use_voronoi = false;
 static bool        use_mass    = false;
+static bool        use_middle  = false;
 static bool        use_check   = false;
 static bool        use_force   = false;
 
 static char message [] =
     "[OPTIONS]       -v, --voronoi    : equilibrate diagram of Voronoï\n"
     "                -m, --mass       : insert masscenters\n"
+    "                -e, --edges       : insert middle edges\n"
     "                -c, --check      : check delaunay criterion\n"
     "                -f, --force      : force boundaries and erase the box";
 
@@ -40,6 +42,8 @@ ParseArguments (int argc, char const **argv)
             use_voronoi = true;
         else if (temp == "-m" || temp == "--mass")
             use_mass = true;
+        else if (temp == "-e" || temp == "--edges")
+            use_middle = true;
         else if (temp == "-c" || temp == "--check")
             use_check = true;
         else if (temp == "-f" || temp == "--force")
@@ -106,6 +110,16 @@ main (int argc, const char **argv)
     if (use_mass)
     {
         InsertMasscenter (&input, &output, 500);
+
+        if (use_check)
+            CheckDelaunayCriterion (&output);
+
+        MakeHistogram (&output);
+    }
+
+    if (use_middle && !use_mass)
+    {
+        InsertMiddleEdges (&input, &output, 500);
 
         if (use_check)
             CheckDelaunayCriterion (&output);

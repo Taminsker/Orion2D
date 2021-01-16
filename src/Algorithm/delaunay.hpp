@@ -22,4 +22,7 @@ CheckDelaunayCriterion (Mesh *mesh);
 void
 InsertMasscenter (Mesh *input, Mesh *output, ul_t maxiter = 100);
 
+void
+InsertMiddleEdges (Mesh *input, Mesh *output, ul_t maxiter = 100);
+
 #endif  // DELAUNAY_HPP

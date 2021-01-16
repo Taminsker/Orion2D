@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.14.0, 2021-01-15T13:58:25. -->
+<!-- Written by QtCreator 4.14.0, 2021-01-15T18:02:56. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -217,12 +217,14 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Orion2D</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.Orion2D</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">Orion2D</value>
-    <value type="QString" key="RunConfiguration.Arguments">-f ../data/tortoise_963.mesh</value>
+    <value type="QString" key="RunConfiguration.Arguments"> -f -m -c -v ../data/square_100.mesh
+</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseTerminal">false</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/home/valou/Documents/Ubordeaux/Master/S3/Mesh/Projet/Orion2D/build</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.1">
     <value type="QString" key="Analyzer.Perf.CallgraphMode">dwarf</value>
@@ -293,7 +295,6 @@
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/home/valou/Documents/Ubordeaux/Master/S3/Compressible/Projet/UpWindHydro/build</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">2</value>
   </valuemap>

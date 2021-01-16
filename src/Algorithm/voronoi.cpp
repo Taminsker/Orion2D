@@ -224,18 +224,18 @@ EquilibrateByVoronoiCentroids (Mesh *mesh, ul_t toexclude)
 
     INFOS << "Build the connectivity table" << ENDLINE;
 
-    real_t value = 1e20;
-    real_t total = 0.;
-    ul_t   it    = 0;
-
+    real_t value     = 1e20;
+    real_t total     = 0.;
+    ul_t   it        = 0;
+    real_t criterion = hmin / static_cast<real_t> (numPoints);
     //    hmin /= static_cast<real_t> (numPoints);
 
     INFOS << "iter max  = " << numPoints << ENDLINE;
-    INFOS << "criterion = " << 0.01 * hmin << ENDLINE << ENDLINE;
+    INFOS << "criterion = " << criterion << ENDLINE << ENDLINE;
 
     std::cout << std::setw (6) << "loop #" << SPC "current #" << SPC "total #" << std::scientific << ENDLINE;
 
-    while (value > 0.01 * hmin && it < numPoints)
+    while (value > criterion && it < numPoints)
     {
         value = EquilibrateKernelCentroids (mesh, toexclude, table);
         total += value;
